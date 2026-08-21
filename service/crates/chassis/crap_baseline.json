@@ -109,7 +109,7 @@
     {
       "file": "crates/chassis/src/connectors/maps.rs",
       "function": "MockMapsProvider::distance_km",
-      "line": 38,
+      "line": 35,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0
@@ -205,7 +205,7 @@
     {
       "file": "crates/chassis/src/connectors/storage.rs",
       "function": "MockFileStorage::delete_file",
-      "line": 57,
+      "line": 54,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0
@@ -251,9 +251,49 @@
       "crap": 7.0
     },
     {
+      "file": "crates/chassis/src/locations.rs",
+      "function": "list",
+      "line": 59,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/locations.rs",
+      "function": "seed",
+      "line": 40,
+      "cyclomatic": 3.0,
+      "coverage": 100.0,
+      "crap": 3.0
+    },
+    {
+      "file": "crates/chassis/src/treatments.rs",
+      "function": "by_slug",
+      "line": 110,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/treatments.rs",
+      "function": "list",
+      "line": 102,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/treatments.rs",
+      "function": "seed",
+      "line": 83,
+      "cyclomatic": 3.0,
+      "coverage": 100.0,
+      "crap": 3.0
+    },
+    {
       "file": "crates/chassis/src/users.rs",
       "function": "by_email",
-      "line": 47,
+      "line": 48,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0
@@ -261,7 +301,7 @@
     {
       "file": "crates/chassis/src/users.rs",
       "function": "by_id",
-      "line": 55,
+      "line": 56,
       "cyclomatic": 1.0,
       "coverage": 0.0,
       "crap": 2.0
@@ -269,7 +309,7 @@
     {
       "file": "crates/chassis/src/users.rs",
       "function": "create",
-      "line": 25,
+      "line": 26,
       "cyclomatic": 1.0,
       "coverage": 95.23809523809523,
       "crap": 1.0001079796998165
@@ -277,22 +317,22 @@
     {
       "file": "crates/chassis/src/users.rs",
       "function": "mark_verified",
-      "line": 63,
+      "line": 64,
       "cyclomatic": 2.0,
       "coverage": 0.0,
       "crap": 6.0
     }
   ],
   "diagnostics": {
-    "analyzed_files": 10,
-    "lcov_files": 32,
-    "matched_files": 10,
+    "analyzed_files": 12,
+    "lcov_files": 26,
+    "matched_files": 12,
     "source_only": {
       "count": 0,
       "examples": []
     },
     "lcov_only": {
-      "count": 22,
+      "count": 14,
       "examples": [
         "/root/platform-templates/service/crates/chassis/src/analytics.rs",
         "/root/platform-templates/service/crates/chassis/src/apikeys.rs",
