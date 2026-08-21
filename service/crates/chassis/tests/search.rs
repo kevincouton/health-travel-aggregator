@@ -22,9 +22,18 @@ async fn make_clinic(
     city: &str,
     accreditations: &[String],
 ) -> clinics::Clinic {
-    clinics::create(pool, owner, name, slug, country, city, accreditations, Some("description"))
-        .await
-        .unwrap()
+    clinics::create(
+        pool,
+        owner,
+        name,
+        slug,
+        country,
+        city,
+        accreditations,
+        Some("description"),
+    )
+    .await
+    .unwrap()
 }
 
 async fn approve(pool: &PgPool, id: Uuid) {
@@ -44,8 +53,26 @@ async fn text_search_matches_name_or_city(pool: PgPool) {
     chassis::db::migrate(&pool).await.unwrap();
     let owner = provider(&pool, "search@example.com").await;
 
-    let a = make_clinic(&pool, owner, "alpha-clinic", "Alpha Dental", "US", "New York", &[]).await;
-    let b = make_clinic(&pool, owner, "beta-clinic", "Beta Care", "US", "Boston", &[]).await;
+    let a = make_clinic(
+        &pool,
+        owner,
+        "alpha-clinic",
+        "Alpha Dental",
+        "US",
+        "New York",
+        &[],
+    )
+    .await;
+    let b = make_clinic(
+        &pool,
+        owner,
+        "beta-clinic",
+        "Beta Care",
+        "US",
+        "Boston",
+        &[],
+    )
+    .await;
     approve(&pool, a.id).await;
     approve(&pool, b.id).await;
 
@@ -86,7 +113,16 @@ async fn country_and_city_filter(pool: PgPool) {
     let owner = provider(&pool, "location@example.com").await;
 
     let us_miami = make_clinic(&pool, owner, "us-miami", "Miami Clinic", "US", "Miami", &[]).await;
-    let ca_toronto = make_clinic(&pool, owner, "ca-toronto", "Toronto Clinic", "CA", "Toronto", &[]).await;
+    let ca_toronto = make_clinic(
+        &pool,
+        owner,
+        "ca-toronto",
+        "Toronto Clinic",
+        "CA",
+        "Toronto",
+        &[],
+    )
+    .await;
     approve(&pool, us_miami.id).await;
     approve(&pool, ca_toronto.id).await;
 
@@ -156,13 +192,37 @@ async fn treatment_filter_via_published_packages(pool: PgPool) {
     treatments::seed(&pool).await.unwrap();
     let owner = provider(&pool, "treatment@example.com").await;
 
-    let dental_clinic = make_clinic(&pool, owner, "dental-clinic", "Dental Plus", "US", "Austin", &[]).await;
-    let hair_clinic = make_clinic(&pool, owner, "hair-clinic", "Hair Restore", "US", "Austin", &[]).await;
+    let dental_clinic = make_clinic(
+        &pool,
+        owner,
+        "dental-clinic",
+        "Dental Plus",
+        "US",
+        "Austin",
+        &[],
+    )
+    .await;
+    let hair_clinic = make_clinic(
+        &pool,
+        owner,
+        "hair-clinic",
+        "Hair Restore",
+        "US",
+        "Austin",
+        &[],
+    )
+    .await;
     approve(&pool, dental_clinic.id).await;
     approve(&pool, hair_clinic.id).await;
 
-    let dental = treatments::by_slug(&pool, "dental-implants").await.unwrap().unwrap();
-    let hair = treatments::by_slug(&pool, "hair-transplant").await.unwrap().unwrap();
+    let dental = treatments::by_slug(&pool, "dental-implants")
+        .await
+        .unwrap()
+        .unwrap();
+    let hair = treatments::by_slug(&pool, "hair-transplant")
+        .await
+        .unwrap()
+        .unwrap();
 
     let dental_pkg = packages::create(
         &pool,
@@ -240,12 +300,17 @@ async fn price_range_filter(pool: PgPool) {
     treatments::seed(&pool).await.unwrap();
     let owner = provider(&pool, "price@example.com").await;
 
-    let cheap_clinic = make_clinic(&pool, owner, "cheap", "Cheap Clinic", "US", "Austin", &[]).await;
-    let pricey_clinic = make_clinic(&pool, owner, "pricey", "Pricey Clinic", "US", "Austin", &[]).await;
+    let cheap_clinic =
+        make_clinic(&pool, owner, "cheap", "Cheap Clinic", "US", "Austin", &[]).await;
+    let pricey_clinic =
+        make_clinic(&pool, owner, "pricey", "Pricey Clinic", "US", "Austin", &[]).await;
     approve(&pool, cheap_clinic.id).await;
     approve(&pool, pricey_clinic.id).await;
 
-    let dental = treatments::by_slug(&pool, "dental-implants").await.unwrap().unwrap();
+    let dental = treatments::by_slug(&pool, "dental-implants")
+        .await
+        .unwrap()
+        .unwrap();
 
     let cheap_pkg = packages::create(
         &pool,
@@ -261,7 +326,15 @@ async fn price_range_filter(pool: PgPool) {
     .await
     .unwrap();
     packages::update(
-        &pool, cheap_pkg.id, "Cheap", Some(100), Some(500), None, &[], &[], true,
+        &pool,
+        cheap_pkg.id,
+        "Cheap",
+        Some(100),
+        Some(500),
+        None,
+        &[],
+        &[],
+        true,
     )
     .await
     .unwrap();
@@ -280,7 +353,15 @@ async fn price_range_filter(pool: PgPool) {
     .await
     .unwrap();
     packages::update(
-        &pool, pricey_pkg.id, "Pricey", Some(5_000), Some(10_000), None, &[], &[], true,
+        &pool,
+        pricey_pkg.id,
+        "Pricey",
+        Some(5_000),
+        Some(10_000),
+        None,
+        &[],
+        &[],
+        true,
     )
     .await
     .unwrap();
@@ -319,7 +400,16 @@ async fn accreditation_filter(pool: PgPool) {
     chassis::db::migrate(&pool).await.unwrap();
     let owner = provider(&pool, "accreditation@example.com").await;
 
-    let jci = make_clinic(&pool, owner, "jci", "JCI Clinic", "US", "Austin", &["JCI".into()]).await;
+    let jci = make_clinic(
+        &pool,
+        owner,
+        "jci",
+        "JCI Clinic",
+        "US",
+        "Austin",
+        &["JCI".into()],
+    )
+    .await;
     let iso = make_clinic(
         &pool,
         owner,

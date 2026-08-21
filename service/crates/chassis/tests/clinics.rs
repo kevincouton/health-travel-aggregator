@@ -45,7 +45,10 @@ async fn create_and_fetch(pool: PgPool) {
     let by_id = clinics::by_id(&pool, clinic.id).await.unwrap().unwrap();
     assert_eq!(by_id.id, clinic.id);
 
-    let by_slug = clinics::by_slug(&pool, "test-clinic").await.unwrap().unwrap();
+    let by_slug = clinics::by_slug(&pool, "test-clinic")
+        .await
+        .unwrap()
+        .unwrap();
     assert_eq!(by_slug.id, clinic.id);
 }
 
@@ -104,10 +107,14 @@ async fn list_public_only_approved_and_filtered(pool: PgPool) {
     let us = clinics::list_public(&pool, Some("US"), None).await.unwrap();
     assert_eq!(us.len(), 1);
 
-    let miami = clinics::list_public(&pool, Some("US"), Some("Miami")).await.unwrap();
+    let miami = clinics::list_public(&pool, Some("US"), Some("Miami"))
+        .await
+        .unwrap();
     assert_eq!(miami.len(), 1);
 
-    let boston = clinics::list_public(&pool, Some("US"), Some("Boston")).await.unwrap();
+    let boston = clinics::list_public(&pool, Some("US"), Some("Boston"))
+        .await
+        .unwrap();
     assert!(boston.is_empty());
 }
 
@@ -143,9 +150,18 @@ async fn update_own_clinic(pool: PgPool) {
 async fn update_by_other_owner_is_not_found(pool: PgPool) {
     let owner = provider(&pool, "owner2@example.com").await;
     let other = provider(&pool, "other@example.com").await;
-    let clinic = clinics::create(&pool, owner, "Clinic", "secure-clinic", "US", "Dallas", &[], None)
-        .await
-        .unwrap();
+    let clinic = clinics::create(
+        &pool,
+        owner,
+        "Clinic",
+        "secure-clinic",
+        "US",
+        "Dallas",
+        &[],
+        None,
+    )
+    .await
+    .unwrap();
 
     let err = clinics::update(
         &pool,

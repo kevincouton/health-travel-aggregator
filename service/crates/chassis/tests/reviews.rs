@@ -45,7 +45,11 @@ async fn make_converted_inquiry(
     .await
     .unwrap();
 
-    let owner = clinics::by_id(pool, clinic_id).await.unwrap().unwrap().owner_user_id;
+    let owner = clinics::by_id(pool, clinic_id)
+        .await
+        .unwrap()
+        .unwrap()
+        .owner_user_id;
     inquiries::update_status(pool, inquiry.id, owner, InquiryStatus::Converted)
         .await
         .unwrap()
@@ -60,7 +64,9 @@ async fn can_review_returns_converted_inquiry(pool: PgPool) {
     let clinic = make_clinic(&pool, owner, "review-clinic").await;
     let inquiry = make_converted_inquiry(&pool, patient, clinic.id).await;
 
-    let eligible = reviews::can_review(&pool, patient, clinic.id).await.unwrap();
+    let eligible = reviews::can_review(&pool, patient, clinic.id)
+        .await
+        .unwrap();
     assert_eq!(eligible, Some(inquiry.id));
 }
 
@@ -83,7 +89,9 @@ async fn can_review_none_for_new_inquiry(pool: PgPool) {
     .await
     .unwrap();
 
-    let eligible = reviews::can_review(&pool, patient, clinic.id).await.unwrap();
+    let eligible = reviews::can_review(&pool, patient, clinic.id)
+        .await
+        .unwrap();
     assert_eq!(eligible, None);
 }
 
@@ -95,9 +103,16 @@ async fn create_review_and_list(pool: PgPool) {
     let clinic = make_clinic(&pool, owner, "list-clinic").await;
     let inquiry = make_converted_inquiry(&pool, patient, clinic.id).await;
 
-    let review = reviews::create(&pool, clinic.id, patient, inquiry.id, 5, Some("Great clinic"))
-        .await
-        .unwrap();
+    let review = reviews::create(
+        &pool,
+        clinic.id,
+        patient,
+        inquiry.id,
+        5,
+        Some("Great clinic"),
+    )
+    .await
+    .unwrap();
     assert_eq!(review.clinic_id, clinic.id);
     assert_eq!(review.patient_user_id, patient);
     assert_eq!(review.inquiry_id, inquiry.id);

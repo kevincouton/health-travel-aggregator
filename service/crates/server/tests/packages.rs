@@ -419,8 +419,12 @@ async fn public_detail_includes_clinic_and_treatment_names(pool: DbPool) {
     let pool = state.pool.clone();
     let router = app(state);
 
-    let (clinic_id, owner_id) =
-        create_clinic(&pool, "enriched-detail@example.com", "enriched-detail-clinic").await;
+    let (clinic_id, owner_id) = create_clinic(
+        &pool,
+        "enriched-detail@example.com",
+        "enriched-detail-clinic",
+    )
+    .await;
     let treatment_id = treatment_id(&pool, "dental-implants").await;
     let provider = session_for_user(&pool, owner_id).await;
 

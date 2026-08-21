@@ -125,13 +125,8 @@ pub async fn list_public(
     Query(query): Query<SearchQuery>,
     State(state): State<AppState>,
 ) -> Result<Json<SearchResponse>, ApiError> {
-    let (clinics, total) = clinics::search(
-        &state.pool,
-        query.filters,
-        query.page,
-        query.per_page,
-    )
-    .await?;
+    let (clinics, total) =
+        clinics::search(&state.pool, query.filters, query.page, query.per_page).await?;
 
     Ok(Json(SearchResponse {
         clinics,

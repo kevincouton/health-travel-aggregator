@@ -80,17 +80,10 @@ async fn create_converted_inquiry(
     patient_id: Uuid,
     contact_email: &str,
 ) -> Uuid {
-    let inquiry = chassis::inquiries::create(
-        pool,
-        patient_id,
-        clinic_id,
-        None,
-        None,
-        None,
-        contact_email,
-    )
-    .await
-    .unwrap();
+    let inquiry =
+        chassis::inquiries::create(pool, patient_id, clinic_id, None, None, None, contact_email)
+            .await
+            .unwrap();
     chassis::inquiries::update_status(pool, inquiry.id, owner_id, InquiryStatus::Converted)
         .await
         .unwrap()
@@ -115,7 +108,9 @@ async fn create_review_requires_auth(pool: DbPool) {
         .method("POST")
         .uri("/clinics/test-clinic/reviews")
         .header("Content-Type", "application/json")
-        .body(Body::from(review_body(Uuid::new_v4(), 5, "Good").to_string()))
+        .body(Body::from(
+            review_body(Uuid::new_v4(), 5, "Good").to_string(),
+        ))
         .unwrap();
     let resp = router.oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 401);
@@ -129,10 +124,15 @@ async fn patient_can_create_review_after_converted_inquiry(pool: DbPool) {
 
     let (clinic_id, owner_id) =
         create_clinic(&pool, "owner-review@example.com", "review-clinic").await;
-    let (patient_id, patient) =
-        patient_session(&pool, "patient-review@example.com").await;
-    let inquiry_id =
-        create_converted_inquiry(&pool, clinic_id, owner_id, patient_id, "patient-review@example.com").await;
+    let (patient_id, patient) = patient_session(&pool, "patient-review@example.com").await;
+    let inquiry_id = create_converted_inquiry(
+        &pool,
+        clinic_id,
+        owner_id,
+        patient_id,
+        "patient-review@example.com",
+    )
+    .await;
 
     let req = axum::http::Request::builder()
         .method("POST")
@@ -171,8 +171,7 @@ async fn patient_cannot_review_without_converted_inquiry(pool: DbPool) {
 
     let (clinic_id, _owner_id) =
         create_clinic(&pool, "owner-no-review@example.com", "no-review-clinic").await;
-    let (patient_id, patient) =
-        patient_session(&pool, "patient-no-review@example.com").await;
+    let (patient_id, patient) = patient_session(&pool, "patient-no-review@example.com").await;
 
     let inquiry = chassis::inquiries::create(
         &pool,
@@ -205,17 +204,24 @@ async fn patient_cannot_review_with_wrong_inquiry_id(pool: DbPool) {
 
     let (clinic_id, owner_id) =
         create_clinic(&pool, "owner-wrong-inq@example.com", "wrong-inq-clinic").await;
-    let (patient_id, patient) =
-        patient_session(&pool, "patient-wrong-inq@example.com").await;
-    let _inquiry_id =
-        create_converted_inquiry(&pool, clinic_id, owner_id, patient_id, "patient-wrong-inq@example.com").await;
+    let (patient_id, patient) = patient_session(&pool, "patient-wrong-inq@example.com").await;
+    let _inquiry_id = create_converted_inquiry(
+        &pool,
+        clinic_id,
+        owner_id,
+        patient_id,
+        "patient-wrong-inq@example.com",
+    )
+    .await;
 
     let req = axum::http::Request::builder()
         .method("POST")
         .uri("/clinics/wrong-inq-clinic/reviews")
         .header("Content-Type", "application/json")
         .header("Cookie", format!("session={}", patient))
-        .body(Body::from(review_body(Uuid::new_v4(), 4, "Nice").to_string()))
+        .body(Body::from(
+            review_body(Uuid::new_v4(), 4, "Nice").to_string(),
+        ))
         .unwrap();
     let resp = router.oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 400);
@@ -236,7 +242,9 @@ async fn review_requires_patient_role(pool: DbPool) {
         .uri("/clinics/role-clinic/reviews")
         .header("Content-Type", "application/json")
         .header("Cookie", format!("session={}", provider))
-        .body(Body::from(review_body(Uuid::new_v4(), 5, "Good").to_string()))
+        .body(Body::from(
+            review_body(Uuid::new_v4(), 5, "Good").to_string(),
+        ))
         .unwrap();
     let resp = router.oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 403);
@@ -248,11 +256,16 @@ async fn duplicate_review_is_conflict(pool: DbPool) {
     let pool = state.pool.clone();
     let router = app(state);
 
-    let (clinic_id, owner_id) =
-        create_clinic(&pool, "owner-dup@example.com", "dup-clinic").await;
+    let (clinic_id, owner_id) = create_clinic(&pool, "owner-dup@example.com", "dup-clinic").await;
     let (patient_id, patient) = patient_session(&pool, "patient-dup@example.com").await;
-    let inquiry_id =
-        create_converted_inquiry(&pool, clinic_id, owner_id, patient_id, "patient-dup@example.com").await;
+    let inquiry_id = create_converted_inquiry(
+        &pool,
+        clinic_id,
+        owner_id,
+        patient_id,
+        "patient-dup@example.com",
+    )
+    .await;
 
     let req = axum::http::Request::builder()
         .method("POST")
@@ -283,10 +296,15 @@ async fn public_can_list_reviews(pool: DbPool) {
 
     let (clinic_id, owner_id) =
         create_clinic(&pool, "owner-public@example.com", "public-clinic").await;
-    let (patient_id, patient) =
-        patient_session(&pool, "patient-public@example.com").await;
-    let inquiry_id =
-        create_converted_inquiry(&pool, clinic_id, owner_id, patient_id, "patient-public@example.com").await;
+    let (patient_id, patient) = patient_session(&pool, "patient-public@example.com").await;
+    let inquiry_id = create_converted_inquiry(
+        &pool,
+        clinic_id,
+        owner_id,
+        patient_id,
+        "patient-public@example.com",
+    )
+    .await;
 
     let req = axum::http::Request::builder()
         .method("POST")

@@ -4,8 +4,7 @@ use axum::{
     Json,
 };
 use chassis::{
-    auth,
-    clinics,
+    auth, clinics,
     error::ApiError,
     inquiries::{self, Inquiry, InquiryStatus},
     users::{self, UserRole},

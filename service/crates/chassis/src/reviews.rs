@@ -56,7 +56,9 @@ pub async fn create(
     comment: Option<&str>,
 ) -> Result<Review, ApiError> {
     if !(1..=5).contains(&rating) {
-        return Err(ApiError::Validation("rating must be between 1 and 5".into()));
+        return Err(ApiError::Validation(
+            "rating must be between 1 and 5".into(),
+        ));
     }
 
     sqlx::query_as::<_, Review>(

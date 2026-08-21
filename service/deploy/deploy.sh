@@ -68,7 +68,41 @@ rollback() {
 echo "=== Building $PLATFORM ==="
 (cd service && cargo build --release -p server)
 cp "service/target/release/server" "${PLATFORM}-server.new"
-(cd web && npm ci && npx nuxt generate)
+
+# The Nuxt generate step fetches live clinic/treatment data from the API, so we
+# start a local instance of the server against the configured database.
+SERVER_PID=""
+start_local_server() {
+  if [ -z "${DATABASE_URL:-}" ]; then
+    echo "WARNING: DATABASE_URL not set; nuxt generate may fail or produce empty content" >&2
+    return 0
+  fi
+  ./${PLATFORM}-server.new > /tmp/${PLATFORM}-build-server.log 2>&1 &
+  SERVER_PID=$!
+  for _ in $(seq 1 30); do
+    if curl -sf http://localhost:8080/healthz > /dev/null 2>&1; then
+      echo "Local build server ready (pid $SERVER_PID)" >&2
+      return 0
+    fi
+    sleep 1
+  done
+  echo "ERROR: local build server failed to start" >&2
+  cat /tmp/${PLATFORM}-build-server.log >&2 || true
+  return 1
+}
+stop_local_server() {
+  if [ -n "$SERVER_PID" ]; then
+    kill "$SERVER_PID" 2>/dev/null || true
+    wait "$SERVER_PID" 2>/dev/null || true
+    SERVER_PID=""
+  fi
+}
+
+trap stop_local_server EXIT
+start_local_server
+(cd web && npm ci && NUXT_PUBLIC_API_URL=http://localhost:8080 npx nuxt generate)
+stop_local_server
+trap - EXIT
 
 echo "=== Shipping to $REMOTE ==="
 "${SSH[@]}" "$REMOTE" "if [ -f '$BINARY' ]; then cp '$BINARY' '${BINARY}.prev'; fi"

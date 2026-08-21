@@ -48,5 +48,7 @@ async fn list_treatments_returns_seeded_data(pool: DbPool) {
     let json = body_json(resp).await;
     let treatments = json["treatments"].as_array().unwrap();
     assert!(!treatments.is_empty());
-    assert!(treatments.iter().all(|t| t["slug"].is_string() && t["name"].is_string()));
+    assert!(treatments
+        .iter()
+        .all(|t| t["slug"].is_string() && t["name"].is_string()));
 }

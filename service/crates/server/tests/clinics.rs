@@ -1,7 +1,6 @@
 use axum::body::Body;
 use chassis::{
-    auth, config::Config, connectors::email::MockEmailSender, db::DbPool, users,
-    users::UserRole,
+    auth, config::Config, connectors::email::MockEmailSender, db::DbPool, users, users::UserRole,
 };
 use server::{router::app, state::AppState};
 use std::sync::Arc;
@@ -63,7 +62,9 @@ async fn create_clinic_requires_provider_or_platform_admin(pool: DbPool) {
         .uri("/me/clinics")
         .header("Content-Type", "application/json")
         .header("Cookie", format!("session={}", patient))
-        .body(Body::from(clinic_body("Clinic", "clinic", "US", "Austin").to_string()))
+        .body(Body::from(
+            clinic_body("Clinic", "clinic", "US", "Austin").to_string(),
+        ))
         .unwrap();
     let resp = router.clone().oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 403);
@@ -74,7 +75,9 @@ async fn create_clinic_requires_provider_or_platform_admin(pool: DbPool) {
         .uri("/me/clinics")
         .header("Content-Type", "application/json")
         .header("Cookie", format!("session={}", provider))
-        .body(Body::from(clinic_body("Clinic", "clinic", "US", "Austin").to_string()))
+        .body(Body::from(
+            clinic_body("Clinic", "clinic", "US", "Austin").to_string(),
+        ))
         .unwrap();
     let resp = router.oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 200);
@@ -93,7 +96,9 @@ async fn create_and_list_own_clinics(pool: DbPool) {
         .uri("/me/clinics")
         .header("Content-Type", "application/json")
         .header("Cookie", format!("session={}", provider))
-        .body(Body::from(clinic_body("Mine", "mine", "US", "Denver").to_string()))
+        .body(Body::from(
+            clinic_body("Mine", "mine", "US", "Denver").to_string(),
+        ))
         .unwrap();
     let resp = router.clone().oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 200);
@@ -169,13 +174,27 @@ async fn public_detail_only_approved(pool: DbPool) {
     let pool = state.pool.clone();
     let router = app(state);
 
-    let owner_id = users::create(&pool, "public-owner@example.com", UserRole::ProviderAdmin, None)
-        .await
-        .unwrap()
-        .id;
-    let clinic = chassis::clinics::create(&pool, owner_id, "Public", "public-clinic", "US", "Miami", &[], None)
-        .await
-        .unwrap();
+    let owner_id = users::create(
+        &pool,
+        "public-owner@example.com",
+        UserRole::ProviderAdmin,
+        None,
+    )
+    .await
+    .unwrap()
+    .id;
+    let clinic = chassis::clinics::create(
+        &pool,
+        owner_id,
+        "Public",
+        "public-clinic",
+        "US",
+        "Miami",
+        &[],
+        None,
+    )
+    .await
+    .unwrap();
 
     let req = axum::http::Request::builder()
         .uri("/clinics/public-clinic")
@@ -207,16 +226,39 @@ async fn public_list_filters_and_approval(pool: DbPool) {
     let pool = state.pool.clone();
     let router = app(state);
 
-    let owner_id = users::create(&pool, "list-owner@example.com", UserRole::ProviderAdmin, None)
-        .await
-        .unwrap()
-        .id;
-    let miami = chassis::clinics::create(&pool, owner_id, "Miami", "miami-clinic", "US", "Miami", &[], None)
-        .await
-        .unwrap();
-    let _draft = chassis::clinics::create(&pool, owner_id, "Draft", "draft-clinic", "US", "Miami", &[], None)
-        .await
-        .unwrap();
+    let owner_id = users::create(
+        &pool,
+        "list-owner@example.com",
+        UserRole::ProviderAdmin,
+        None,
+    )
+    .await
+    .unwrap()
+    .id;
+    let miami = chassis::clinics::create(
+        &pool,
+        owner_id,
+        "Miami",
+        "miami-clinic",
+        "US",
+        "Miami",
+        &[],
+        None,
+    )
+    .await
+    .unwrap();
+    let _draft = chassis::clinics::create(
+        &pool,
+        owner_id,
+        "Draft",
+        "draft-clinic",
+        "US",
+        "Miami",
+        &[],
+        None,
+    )
+    .await
+    .unwrap();
 
     sqlx::query("UPDATE clinics SET status = 'approved' WHERE id = $1")
         .bind(miami.id)

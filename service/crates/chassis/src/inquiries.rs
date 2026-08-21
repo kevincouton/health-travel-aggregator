@@ -79,7 +79,10 @@ pub async fn create(
     .map_err(map_db_error)
 }
 
-pub async fn list_for_patient(pool: &DbPool, patient_user_id: Uuid) -> Result<Vec<Inquiry>, ApiError> {
+pub async fn list_for_patient(
+    pool: &DbPool,
+    patient_user_id: Uuid,
+) -> Result<Vec<Inquiry>, ApiError> {
     sqlx::query_as::<_, Inquiry>(
         "SELECT * FROM inquiries WHERE patient_user_id = $1 ORDER BY created_at DESC",
     )

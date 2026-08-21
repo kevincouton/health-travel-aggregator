@@ -258,13 +258,11 @@ pub async fn search(
 }
 
 pub async fn list_by_status(pool: &DbPool, status: ClinicStatus) -> Result<Vec<Clinic>, ApiError> {
-    sqlx::query_as::<_, Clinic>(
-        "SELECT * FROM clinics WHERE status = $1 ORDER BY created_at DESC",
-    )
-    .bind(status)
-    .fetch_all(pool)
-    .await
-    .map_err(|_| ApiError::Internal)
+    sqlx::query_as::<_, Clinic>("SELECT * FROM clinics WHERE status = $1 ORDER BY created_at DESC")
+        .bind(status)
+        .fetch_all(pool)
+        .await
+        .map_err(|_| ApiError::Internal)
 }
 
 pub async fn update_status(

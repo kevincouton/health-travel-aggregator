@@ -46,13 +46,10 @@ impl EmailSender for MockEmailSender {
         clinic_name: &str,
         patient_email: &str,
     ) -> Result<(), ApiError> {
-        self.sent
-            .lock()
-            .await
-            .push(format!(
-                "inquiry to {} for {} from {}",
-                to, clinic_name, patient_email
-            ));
+        self.sent.lock().await.push(format!(
+            "inquiry to {} for {} from {}",
+            to, clinic_name, patient_email
+        ));
         Ok(())
     }
 }

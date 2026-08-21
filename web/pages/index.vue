@@ -98,9 +98,9 @@ const heroQuery = ref('')
 
 const [{ data: clinicsData, pending: clinicsPending }, { data: treatmentsData, pending: treatmentsPending }] =
   await Promise.all([
-    useFetch(() => `${useRuntimeConfig().public.apiUrl}/clinics`, {
+    useFetch(() => `${useRuntimeConfig().public.apiUrl}/clinics?per_page=6`, {
       key: 'home-clinics',
-      default: () => [],
+      default: () => ({ clinics: [], total: 0, page: 1, per_page: 6 }),
     }),
     useFetch(() => `${useRuntimeConfig().public.apiUrl}/treatments`, {
       key: 'home-treatments',
@@ -108,7 +108,7 @@ const [{ data: clinicsData, pending: clinicsPending }, { data: treatmentsData, p
     }),
   ])
 
-const featuredClinics = computed(() => (clinicsData.value || []).slice(0, 3))
+const featuredClinics = computed(() => (clinicsData.value?.clinics || []).slice(0, 3))
 const featuredTreatments = computed(() => (treatmentsData.value?.treatments || []).slice(0, 6))
 
 function onHeroSearch() {

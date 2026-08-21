@@ -121,7 +121,8 @@ async fn patient_can_create_and_list_inquiries(pool: DbPool) {
     let pool = state.pool.clone();
     let router = app(state);
 
-    let (clinic_id, _owner_id) = create_clinic(&pool, "owner-list@example.com", "list-clinic").await;
+    let (clinic_id, _owner_id) =
+        create_clinic(&pool, "owner-list@example.com", "list-clinic").await;
     let patient = session_for(&pool, "patient-list@example.com", UserRole::Patient).await;
 
     let req = axum::http::Request::builder()
@@ -168,7 +169,9 @@ async fn provider_can_list_and_update_status(pool: DbPool) {
         .uri("/inquiries")
         .header("Content-Type", "application/json")
         .header("Cookie", format!("session={}", patient))
-        .body(Body::from(inquiry_body(clinic_id, Some(package_id)).to_string()))
+        .body(Body::from(
+            inquiry_body(clinic_id, Some(package_id)).to_string(),
+        ))
         .unwrap();
     let resp = router.clone().oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 200);
@@ -252,7 +255,8 @@ async fn patient_cannot_update_status(pool: DbPool) {
     let pool = state.pool.clone();
     let router = app(state);
 
-    let (clinic_id, _owner_id) = create_clinic(&pool, "owner-patient@example.com", "patient-clinic").await;
+    let (clinic_id, _owner_id) =
+        create_clinic(&pool, "owner-patient@example.com", "patient-clinic").await;
     let patient = session_for(&pool, "patient-status@example.com", UserRole::Patient).await;
 
     let req = axum::http::Request::builder()
@@ -297,7 +301,9 @@ async fn package_must_belong_to_clinic(pool: DbPool) {
         .uri("/inquiries")
         .header("Content-Type", "application/json")
         .header("Cookie", format!("session={}", patient))
-        .body(Body::from(inquiry_body(clinic_a, Some(package_b)).to_string()))
+        .body(Body::from(
+            inquiry_body(clinic_a, Some(package_b)).to_string(),
+        ))
         .unwrap();
     let resp = router.oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 400);
@@ -320,14 +326,19 @@ async fn inquiry_creation_sends_email_notification_to_clinic_owner(pool: DbPool)
         .uri("/inquiries")
         .header("Content-Type", "application/json")
         .header("Cookie", format!("session={}", patient))
-        .body(Body::from(inquiry_body(clinic_id, Some(package_id)).to_string()))
+        .body(Body::from(
+            inquiry_body(clinic_id, Some(package_id)).to_string(),
+        ))
         .unwrap();
     let resp = router.oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 200);
 
     let sent = email.sent.lock().await;
     assert_eq!(sent.len(), 1);
-    let expected = format!("inquiry to {} for Test Clinic from patient@example.com", owner_email);
+    let expected = format!(
+        "inquiry to {} for Test Clinic from patient@example.com",
+        owner_email
+    );
     assert_eq!(sent[0], expected);
 }
 
