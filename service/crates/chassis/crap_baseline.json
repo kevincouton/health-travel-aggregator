@@ -3,22 +3,236 @@
   "version": "0.4.3",
   "entries": [
     {
+      "file": "crates/chassis/src/auth.rs",
+      "function": "create_session",
+      "line": 31,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/auth.rs",
+      "function": "delete_session",
+      "line": 63,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/auth.rs",
+      "function": "generate_magic_link_token",
+      "line": 27,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/auth.rs",
+      "function": "hash_password",
+      "line": 12,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/auth.rs",
+      "function": "require_role",
+      "line": 72,
+      "cyclomatic": 3.0,
+      "coverage": 0.0,
+      "crap": 12.0
+    },
+    {
+      "file": "crates/chassis/src/auth.rs",
+      "function": "resolve_session",
+      "line": 50,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/auth.rs",
+      "function": "verify_password",
+      "line": 20,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
+    },
+    {
       "file": "crates/chassis/src/config.rs",
       "function": "Config::from_env",
       "line": 11,
       "cyclomatic": 1.0,
       "coverage": 100.0,
-      "crap": 1.0,
-      "crate": "chassis"
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/email.rs",
+      "function": "MockEmailSender::default",
+      "line": 23,
+      "cyclomatic": 1.0,
+      "coverage": 0.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/email.rs",
+      "function": "MockEmailSender::new",
+      "line": 15,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/email.rs",
+      "function": "MockEmailSender::send_inquiry_notification",
+      "line": 38,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/email.rs",
+      "function": "MockEmailSender::send_magic_link",
+      "line": 30,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/maps.rs",
+      "function": "MockMapsProvider::default",
+      "line": 23,
+      "cyclomatic": 1.0,
+      "coverage": 0.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/maps.rs",
+      "function": "MockMapsProvider::distance_km",
+      "line": 38,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/maps.rs",
+      "function": "MockMapsProvider::geocode",
+      "line": 30,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/maps.rs",
+      "function": "MockMapsProvider::new",
+      "line": 15,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/payments.rs",
+      "function": "MockPaymentProvider::create_charge",
+      "line": 39,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/payments.rs",
+      "function": "MockPaymentProvider::default",
+      "line": 32,
+      "cyclomatic": 1.0,
+      "coverage": 0.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/payments.rs",
+      "function": "MockPaymentProvider::new",
+      "line": 23,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/payments.rs",
+      "function": "MockPaymentProvider::refund_charge",
+      "line": 54,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/search.rs",
+      "function": "MockSearchEngine::default",
+      "line": 30,
+      "cyclomatic": 1.0,
+      "coverage": 0.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/search.rs",
+      "function": "MockSearchEngine::index_document",
+      "line": 37,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/search.rs",
+      "function": "MockSearchEngine::new",
+      "line": 22,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/search.rs",
+      "function": "MockSearchEngine::search",
+      "line": 50,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/storage.rs",
+      "function": "MockFileStorage::default",
+      "line": 30,
+      "cyclomatic": 1.0,
+      "coverage": 0.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/storage.rs",
+      "function": "MockFileStorage::delete_file",
+      "line": 57,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/storage.rs",
+      "function": "MockFileStorage::new",
+      "line": 22,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/storage.rs",
+      "function": "MockFileStorage::upload_file",
+      "line": 37,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
     },
     {
       "file": "crates/chassis/src/db.rs",
       "function": "connect",
       "line": 5,
-      "cyclomatic": 2.0,
+      "cyclomatic": 1.0,
       "coverage": 0.0,
-      "crap": 2.0,
-      "crate": "chassis"
+      "crap": 2.0
     },
     {
       "file": "crates/chassis/src/db.rs",
@@ -26,8 +240,7 @@
       "line": 9,
       "cyclomatic": 1.0,
       "coverage": 100.0,
-      "crap": 1.0,
-      "crate": "chassis"
+      "crap": 1.0
     },
     {
       "file": "crates/chassis/src/error.rs",
@@ -35,8 +248,7 @@
       "line": 23,
       "cyclomatic": 7.0,
       "coverage": 100.0,
-      "crap": 7.0,
-      "crate": "chassis"
+      "crap": 7.0
     },
     {
       "file": "crates/chassis/src/users.rs",
@@ -44,8 +256,7 @@
       "line": 47,
       "cyclomatic": 1.0,
       "coverage": 100.0,
-      "crap": 1.0,
-      "crate": "chassis"
+      "crap": 1.0
     },
     {
       "file": "crates/chassis/src/users.rs",
@@ -53,17 +264,15 @@
       "line": 55,
       "cyclomatic": 1.0,
       "coverage": 0.0,
-      "crap": 2.0,
-      "crate": "chassis"
+      "crap": 2.0
     },
     {
       "file": "crates/chassis/src/users.rs",
       "function": "create",
       "line": 25,
       "cyclomatic": 1.0,
-      "coverage": 95.2,
-      "crap": 1.0,
-      "crate": "chassis"
+      "coverage": 95.23809523809523,
+      "crap": 1.0001079796998165
     },
     {
       "file": "crates/chassis/src/users.rs",
@@ -71,8 +280,31 @@
       "line": 63,
       "cyclomatic": 2.0,
       "coverage": 0.0,
-      "crap": 6.0,
-      "crate": "chassis"
+      "crap": 6.0
     }
-  ]
+  ],
+  "diagnostics": {
+    "analyzed_files": 10,
+    "lcov_files": 32,
+    "matched_files": 10,
+    "source_only": {
+      "count": 0,
+      "examples": []
+    },
+    "lcov_only": {
+      "count": 22,
+      "examples": [
+        "/root/platform-templates/service/crates/chassis/src/analytics.rs",
+        "/root/platform-templates/service/crates/chassis/src/apikeys.rs",
+        "/root/platform-templates/service/crates/chassis/src/auth.rs",
+        "/root/platform-templates/service/crates/chassis/src/billing.rs",
+        "/root/platform-templates/service/crates/chassis/src/collectors/github_topic.rs",
+        "/root/platform-templates/service/crates/chassis/src/collectors.rs",
+        "/root/platform-templates/service/crates/chassis/src/config.rs",
+        "/root/platform-templates/service/crates/chassis/src/db.rs",
+        "/root/platform-templates/service/crates/chassis/src/platform.rs",
+        "/root/platform-templates/service/crates/chassis/src/scoring.rs"
+      ]
+    }
+  }
 }
