@@ -38,16 +38,18 @@
         >
           No clinics match your search.
         </div>
-        <div v-else class="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          <ClinicCard v-for="clinic in clinics" :key="clinic.id" :clinic="clinic" />
-        </div>
+        <ul v-else class="grid gap-5 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
+          <li v-for="clinic in clinics" :key="clinic.id">
+            <ClinicCard :clinic="clinic" />
+          </li>
+        </ul>
         <div
           v-if="totalPages > 1"
           class="mt-8 flex items-center justify-between rounded-2xl border bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
         >
           <button
             :disabled="page <= 1"
-            class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-gray-900"
             @click="setPage(page - 1)"
           >
             Previous
@@ -57,7 +59,7 @@
           </span>
           <button
             :disabled="page >= totalPages"
-            class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            class="rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus-visible:ring-offset-gray-900"
             @click="setPage(page + 1)"
           >
             Next

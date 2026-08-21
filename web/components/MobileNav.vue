@@ -1,11 +1,13 @@
 <template>
   <div class="md:hidden">
     <button
+      ref="buttonRef"
       type="button"
       :aria-expanded="isOpen"
       aria-controls="mobile-menu"
+      aria-haspopup="menu"
       aria-label="Toggle navigation menu"
-      class="inline-flex items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+      class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
       @click="isOpen = !isOpen"
     >
       <svg
@@ -46,6 +48,7 @@
         v-show="isOpen"
         id="mobile-menu"
         ref="menuRef"
+        role="menu"
         class="absolute left-0 right-0 top-full z-50 border-b bg-white shadow-lg dark:border-gray-800 dark:bg-gray-900"
       >
         <nav class="flex flex-col gap-1 px-4 py-3" aria-label="Mobile navigation">
@@ -59,10 +62,20 @@
 <script setup>
 const isOpen = ref(false)
 const menuRef = ref(null)
+const buttonRef = ref(null)
+
+function closeMenu() {
+  if (isOpen.value) {
+    isOpen.value = false
+    nextTick(() => {
+      buttonRef.value?.focus()
+    })
+  }
+}
 
 function onKeydown(e) {
   if (e.key === 'Escape') {
-    isOpen.value = false
+    closeMenu()
   }
 }
 
@@ -72,7 +85,7 @@ function onClickOutside(e) {
     !menuRef.value.contains(e.target) &&
     !e.target.closest('button[aria-controls="mobile-menu"]')
   ) {
-    isOpen.value = false
+    closeMenu()
   }
 }
 

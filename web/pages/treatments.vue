@@ -15,8 +15,8 @@
     <div v-else-if="error" class="py-12 text-center text-red-600 dark:text-red-400">
       Error loading treatments.
     </div>
-    <div v-else class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-      <article
+    <ul v-else class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <li
         v-for="treatment in treatments"
         :key="treatment.id"
         class="rounded-2xl border bg-white p-5 dark:border-gray-800 dark:bg-gray-900"
@@ -35,8 +35,8 @@
         >
           {{ treatment.description }}
         </p>
-      </article>
-    </div>
+      </li>
+    </ul>
 
     <JsonLd :data="jsonLd" />
   </div>

@@ -7,6 +7,19 @@ test.describe('Smoke', () => {
     await expect(page.locator('h1').first()).toContainText(/medical travel/i)
   })
 
+  test('homepage has exactly one h1', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.locator('h1')).toHaveCount(1)
+  })
+
+  test('mobile menu button has an accessible label', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 })
+    await page.goto('/')
+    const menuButton = page.locator('button[aria-controls="mobile-menu"]').first()
+    await expect(menuButton).toBeVisible()
+    await expect(menuButton).toHaveAttribute('aria-label', 'Toggle navigation menu')
+  })
+
   test('main navigation links are present', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('link', { name: 'Home' }).first()).toBeVisible()

@@ -1,12 +1,21 @@
 <template>
   <div class="max-w-3xl">
-    <h1 class="text-3xl md:text-4xl font-extrabold mb-6 tracking-tight">
-      About health-travel-aggregator
-    </h1>
-    <p class="text-lg leading-relaxed text-gray-600 dark:text-gray-300">
-      health-travel-aggregator is a crowdsourced intelligence platform. It empowers users to build,
-      share, and vote on strategies across multiple domains.
-    </p>
+    <header class="mb-8 md:mb-10">
+      <h1
+        class="text-3xl font-extrabold tracking-tight text-gray-900 md:text-4xl dark:text-gray-100"
+      >
+        About health-travel-aggregator
+      </h1>
+      <p class="mt-3 text-lg text-gray-500 dark:text-gray-400">
+        Learn more about the platform and how it helps patients find medical travel options.
+      </p>
+    </header>
+    <section>
+      <p class="text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+        health-travel-aggregator is a crowdsourced intelligence platform. It empowers users to build,
+        share, and vote on strategies across multiple domains.
+      </p>
+    </section>
 
     <JsonLd :data="jsonLd" />
   </div>

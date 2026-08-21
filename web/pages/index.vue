@@ -37,8 +37,8 @@
           View all →
         </NuxtLink>
       </div>
-      <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        <article
+      <ul class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <li
           v-for="treatment in featuredTreatments"
           :key="treatment.id"
           class="rounded-2xl border bg-white p-5 dark:border-gray-800 dark:bg-gray-900"
@@ -57,8 +57,8 @@
           >
             {{ treatment.description }}
           </p>
-        </article>
-      </div>
+        </li>
+      </ul>
     </section>
 
     <section v-if="featuredClinics.length" class="mt-12">
@@ -71,9 +71,11 @@
           Browse clinics →
         </NuxtLink>
       </div>
-      <div class="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <ClinicCard v-for="clinic in featuredClinics" :key="clinic.id" :clinic="clinic" />
-      </div>
+      <ul class="grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        <li v-for="clinic in featuredClinics" :key="clinic.id">
+          <ClinicCard :clinic="clinic" />
+        </li>
+      </ul>
     </section>
 
     <JsonLd :data="jsonLd" />
