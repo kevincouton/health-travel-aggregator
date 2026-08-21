@@ -1,4 +1,4 @@
-use crate::{handlers::{admin, auth, clinics}, state::AppState};
+use crate::{handlers::{admin, auth, clinics, treatments}, state::AppState};
 use axum::{
     routing::{get, patch, post},
     Router,
@@ -19,6 +19,7 @@ pub fn app(state: AppState) -> Router {
         .route("/auth/me", get(auth::me))
         .route("/me/clinics", post(clinics::create).get(clinics::list_for_owner))
         .route("/me/clinics/:id", patch(clinics::update))
+        .route("/treatments", get(treatments::list))
         .route("/clinics", get(clinics::list_public))
         .route("/clinics/:slug", get(clinics::by_slug))
         .nest("/admin", admin_routes)
