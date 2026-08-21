@@ -225,22 +225,25 @@ async fn public_list_filters_and_approval(pool: DbPool) {
         .unwrap();
 
     let req = axum::http::Request::builder()
-        .uri("/clinics?country_code=US&city=Miami")
+        .uri("/clinics?country=US&city=Miami")
         .body(Body::empty())
         .unwrap();
     let resp = router.clone().oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 200);
     let json = body_json(resp).await;
-    let arr = json.as_array().unwrap();
-    assert_eq!(arr.len(), 1);
-    assert_eq!(arr[0]["slug"], "miami-clinic");
+    let clinics = json["clinics"].as_array().unwrap();
+    assert_eq!(json["total"], 1);
+    assert_eq!(json["page"], 1);
+    assert_eq!(clinics.len(), 1);
+    assert_eq!(clinics[0]["slug"], "miami-clinic");
 
     let req = axum::http::Request::builder()
-        .uri("/clinics?country_code=US&city=Boston")
+        .uri("/clinics?country=US&city=Boston")
         .body(Body::empty())
         .unwrap();
     let resp = router.oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 200);
     let json = body_json(resp).await;
-    assert!(json.as_array().unwrap().is_empty());
+    assert_eq!(json["total"], 0);
+    assert!(json["clinics"].as_array().unwrap().is_empty());
 }

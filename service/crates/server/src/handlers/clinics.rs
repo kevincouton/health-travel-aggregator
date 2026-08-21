@@ -9,7 +9,7 @@ use chassis::{
     error::ApiError,
     users::UserRole,
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Deserialize)]
@@ -33,9 +33,29 @@ pub struct UpdateClinicReq {
 }
 
 #[derive(Deserialize)]
-pub struct PublicListQuery {
-    country_code: Option<String>,
-    city: Option<String>,
+pub struct SearchQuery {
+    #[serde(flatten)]
+    filters: clinics::ClinicFilters,
+    #[serde(default = "default_page")]
+    page: i64,
+    #[serde(default = "default_per_page")]
+    per_page: i64,
+}
+
+fn default_page() -> i64 {
+    1
+}
+
+fn default_per_page() -> i64 {
+    20
+}
+
+#[derive(Serialize)]
+pub struct SearchResponse {
+    clinics: Vec<clinics::Clinic>,
+    total: i64,
+    page: i64,
+    per_page: i64,
 }
 
 pub async fn create(
@@ -102,15 +122,21 @@ pub async fn by_slug(
 }
 
 pub async fn list_public(
-    Query(query): Query<PublicListQuery>,
+    Query(query): Query<SearchQuery>,
     State(state): State<AppState>,
-) -> Result<Json<Vec<clinics::Clinic>>, ApiError> {
-    Ok(Json(
-        clinics::list_public(
-            &state.pool,
-            query.country_code.as_deref(),
-            query.city.as_deref(),
-        )
-        .await?,
-    ))
+) -> Result<Json<SearchResponse>, ApiError> {
+    let (clinics, total) = clinics::search(
+        &state.pool,
+        query.filters,
+        query.page,
+        query.per_page,
+    )
+    .await?;
+
+    Ok(Json(SearchResponse {
+        clinics,
+        total,
+        page: query.page.max(1),
+        per_page: query.per_page.clamp(1, 50),
+    }))
 }

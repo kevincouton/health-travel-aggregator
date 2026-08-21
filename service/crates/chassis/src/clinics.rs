@@ -1,7 +1,7 @@
 use crate::{db::DbPool, error::ApiError};
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use sqlx::FromRow;
+use sqlx::{FromRow, QueryBuilder};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, sqlx::Type, Serialize, Deserialize, PartialEq, Eq)]
@@ -26,6 +26,17 @@ pub struct Clinic {
     pub description: Option<String>,
     pub status: ClinicStatus,
     pub created_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Clone, Default, Deserialize)]
+pub struct ClinicFilters {
+    pub treatment: Option<String>,
+    pub country: Option<String>,
+    pub city: Option<String>,
+    pub min_price: Option<i32>,
+    pub max_price: Option<i32>,
+    pub accreditation: Option<String>,
+    pub q: Option<String>,
 }
 
 const SELECT_CLINIC: &str =
@@ -153,6 +164,97 @@ pub async fn list_public(
         .fetch_all(pool)
         .await
         .map_err(|_| ApiError::Internal)
+}
+
+const SEARCH_SELECT: &str = "SELECT DISTINCT c.id, c.owner_user_id, c.name, c.slug, c.country_code, c.city, c.accreditations, c.description, c.status, c.created_at FROM clinics c";
+
+fn push_filters<'a>(
+    builder: &mut QueryBuilder<'a, sqlx::Postgres>,
+    filters: &'a ClinicFilters,
+    q_pattern: Option<&'a str>,
+) {
+    builder.push(" WHERE c.status = 'approved'");
+
+    if let Some(treatment) = &filters.treatment {
+        builder.push(" AND EXISTS (SELECT 1 FROM packages p JOIN treatments t ON t.id = p.treatment_id WHERE p.clinic_id = c.id AND p.is_published = true AND t.slug = ");
+        builder.push_bind(treatment);
+        builder.push(")");
+    }
+
+    if let Some(country) = &filters.country {
+        builder.push(" AND c.country_code = ");
+        builder.push_bind(country);
+    }
+
+    if let Some(city) = &filters.city {
+        builder.push(" AND c.city = ");
+        builder.push_bind(city);
+    }
+
+    if filters.min_price.is_some() || filters.max_price.is_some() {
+        builder.push(" AND EXISTS (SELECT 1 FROM packages p WHERE p.clinic_id = c.id AND p.is_published = true");
+        if let Some(min_price) = filters.min_price {
+            builder.push(" AND p.price_max >= ");
+            builder.push_bind(min_price);
+        }
+        if let Some(max_price) = filters.max_price {
+            builder.push(" AND p.price_min <= ");
+            builder.push_bind(max_price);
+        }
+        builder.push(")");
+    }
+
+    if let Some(accreditation) = &filters.accreditation {
+        builder.push(" AND c.accreditations && ARRAY[");
+        builder.push_bind(accreditation);
+        builder.push("]");
+    }
+
+    if let Some(pattern) = q_pattern {
+        builder.push(" AND (c.name ILIKE ");
+        builder.push_bind(pattern);
+        builder.push(" OR c.description ILIKE ");
+        builder.push_bind(pattern);
+        builder.push(" OR c.city ILIKE ");
+        builder.push_bind(pattern);
+        builder.push(")");
+    }
+}
+
+pub async fn search(
+    pool: &DbPool,
+    filters: ClinicFilters,
+    page: i64,
+    per_page: i64,
+) -> Result<(Vec<Clinic>, i64), ApiError> {
+    let per_page = per_page.clamp(1, 50);
+    let page = page.max(1);
+    let offset = (page - 1) * per_page;
+
+    let q_pattern: Option<String> = filters.q.as_ref().map(|q| format!("%{q}%"));
+
+    let mut builder = QueryBuilder::new(SEARCH_SELECT);
+    push_filters(&mut builder, &filters, q_pattern.as_deref());
+    builder.push(" ORDER BY c.created_at DESC LIMIT ");
+    builder.push_bind(per_page);
+    builder.push(" OFFSET ");
+    builder.push_bind(offset);
+
+    let clinics = builder
+        .build_query_as::<Clinic>()
+        .fetch_all(pool)
+        .await
+        .map_err(|_| ApiError::Internal)?;
+
+    let mut count_builder = QueryBuilder::new("SELECT COUNT(DISTINCT c.id) FROM clinics c");
+    push_filters(&mut count_builder, &filters, q_pattern.as_deref());
+    let total: i64 = count_builder
+        .build_query_scalar()
+        .fetch_one(pool)
+        .await
+        .map_err(|_| ApiError::Internal)?;
+
+    Ok((clinics, total))
 }
 
 pub async fn list_by_status(pool: &DbPool, status: ClinicStatus) -> Result<Vec<Clinic>, ApiError> {
