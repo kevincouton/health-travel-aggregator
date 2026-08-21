@@ -339,6 +339,70 @@
       "crap": 3.0
     },
     {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "by_id",
+      "line": 100,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "create",
+      "line": 31,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "delete",
+      "line": 91,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "list_for_clinic",
+      "line": 108,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "list_public_for_clinic",
+      "line": 118,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "list_public_for_treatment",
+      "line": 131,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "map_db_error",
+      "line": 23,
+      "cyclomatic": 3.0,
+      "coverage": 80.0,
+      "crap": 3.072
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "update",
+      "line": 61,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
       "file": "crates/chassis/src/treatments.rs",
       "function": "by_slug",
       "line": 110,
@@ -396,20 +460,22 @@
     }
   ],
   "diagnostics": {
-    "analyzed_files": 13,
-    "lcov_files": 19,
-    "matched_files": 13,
+    "analyzed_files": 14,
+    "lcov_files": 22,
+    "matched_files": 14,
     "source_only": {
       "count": 0,
       "examples": []
     },
     "lcov_only": {
-      "count": 6,
+      "count": 8,
       "examples": [
         "/root/health-travel-aggregator/service/crates/server/src/extractors.rs",
         "/root/health-travel-aggregator/service/crates/server/src/handlers/admin.rs",
         "/root/health-travel-aggregator/service/crates/server/src/handlers/auth.rs",
         "/root/health-travel-aggregator/service/crates/server/src/handlers/clinics.rs",
+        "/root/health-travel-aggregator/service/crates/server/src/handlers/packages.rs",
+        "/root/health-travel-aggregator/service/crates/server/src/handlers/treatments.rs",
         "/root/health-travel-aggregator/service/crates/server/src/main.rs",
         "/root/health-travel-aggregator/service/crates/server/src/router.rs"
       ]

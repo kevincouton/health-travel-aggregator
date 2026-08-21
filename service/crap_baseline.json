@@ -339,6 +339,70 @@
       "crap": 3.0
     },
     {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "by_id",
+      "line": 100,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "create",
+      "line": 31,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "delete",
+      "line": 91,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "list_for_clinic",
+      "line": 108,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "list_public_for_clinic",
+      "line": 118,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "list_public_for_treatment",
+      "line": 131,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "map_db_error",
+      "line": 23,
+      "cyclomatic": 3.0,
+      "coverage": 80.0,
+      "crap": 3.072
+    },
+    {
+      "file": "crates/chassis/src/packages.rs",
+      "function": "update",
+      "line": 61,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
       "file": "crates/chassis/src/treatments.rs",
       "function": "by_slug",
       "line": 110,
@@ -397,7 +461,7 @@
     {
       "file": "crates/server/src/extractors.rs",
       "function": "AdminUser::from_request_parts",
-      "line": 39,
+      "line": 65,
       "cyclomatic": 3.0,
       "coverage": 100.0,
       "crap": 3.0
@@ -406,6 +470,14 @@
       "file": "crates/server/src/extractors.rs",
       "function": "CurrentUser::from_request_parts",
       "line": 13,
+      "cyclomatic": 4.0,
+      "coverage": 100.0,
+      "crap": 4.0
+    },
+    {
+      "file": "crates/server/src/extractors.rs",
+      "function": "MaybeUser::from_request_parts",
+      "line": 39,
       "cyclomatic": 4.0,
       "coverage": 100.0,
       "crap": 4.0
@@ -547,6 +619,78 @@
       "crap": 4.0
     },
     {
+      "file": "crates/server/src/handlers/packages.rs",
+      "function": "create",
+      "line": 64,
+      "cyclomatic": 4.0,
+      "coverage": 100.0,
+      "crap": 4.0
+    },
+    {
+      "file": "crates/server/src/handlers/packages.rs",
+      "function": "delete",
+      "line": 118,
+      "cyclomatic": 7.0,
+      "coverage": 93.75,
+      "crap": 7.011962890625
+    },
+    {
+      "file": "crates/server/src/handlers/packages.rs",
+      "function": "is_owner_or_platform_admin",
+      "line": 45,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/server/src/handlers/packages.rs",
+      "function": "list_for_owner",
+      "line": 137,
+      "cyclomatic": 4.0,
+      "coverage": 100.0,
+      "crap": 4.0
+    },
+    {
+      "file": "crates/server/src/handlers/packages.rs",
+      "function": "public_detail",
+      "line": 164,
+      "cyclomatic": 10.0,
+      "coverage": 100.0,
+      "crap": 10.0
+    },
+    {
+      "file": "crates/server/src/handlers/packages.rs",
+      "function": "public_list",
+      "line": 148,
+      "cyclomatic": 5.0,
+      "coverage": 91.66666666666666,
+      "crap": 5.014467592592593
+    },
+    {
+      "file": "crates/server/src/handlers/packages.rs",
+      "function": "require_clinic_ownership",
+      "line": 49,
+      "cyclomatic": 4.0,
+      "coverage": 100.0,
+      "crap": 4.0
+    },
+    {
+      "file": "crates/server/src/handlers/packages.rs",
+      "function": "update",
+      "line": 88,
+      "cyclomatic": 6.0,
+      "coverage": 96.15384615384616,
+      "crap": 6.002048247610378
+    },
+    {
+      "file": "crates/server/src/handlers/treatments.rs",
+      "function": "list",
+      "line": 11,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
+    },
+    {
       "file": "crates/server/src/main.rs",
       "function": "main",
       "line": 6,
@@ -564,9 +708,9 @@
     }
   ],
   "diagnostics": {
-    "analyzed_files": 19,
-    "lcov_files": 19,
-    "matched_files": 19,
+    "analyzed_files": 22,
+    "lcov_files": 22,
+    "matched_files": 22,
     "source_only": {
       "count": 0,
       "examples": []

@@ -1,4 +1,7 @@
-use crate::{handlers::{admin, auth, clinics, treatments}, state::AppState};
+use crate::{
+    handlers::{admin, auth, clinics, packages, treatments},
+    state::AppState,
+};
 use axum::{
     routing::{get, patch, post},
     Router,
@@ -17,11 +20,24 @@ pub fn app(state: AppState) -> Router {
         .route("/auth/magic-link/verify", post(auth::verify_magic_link))
         .route("/auth/logout", post(auth::logout))
         .route("/auth/me", get(auth::me))
-        .route("/me/clinics", post(clinics::create).get(clinics::list_for_owner))
+        .route(
+            "/me/clinics",
+            post(clinics::create).get(clinics::list_for_owner),
+        )
         .route("/me/clinics/:id", patch(clinics::update))
+        .route(
+            "/me/clinics/:clinic_id/packages",
+            post(packages::create).get(packages::list_for_owner),
+        )
+        .route(
+            "/me/clinics/:clinic_id/packages/:id",
+            patch(packages::update).delete(packages::delete),
+        )
         .route("/treatments", get(treatments::list))
         .route("/clinics", get(clinics::list_public))
         .route("/clinics/:slug", get(clinics::by_slug))
+        .route("/clinics/:slug/packages", get(packages::public_list))
+        .route("/packages/:id", get(packages::public_detail))
         .nest("/admin", admin_routes)
         .with_state(state)
 }
