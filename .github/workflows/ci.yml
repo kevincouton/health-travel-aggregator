@@ -53,12 +53,23 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
       - uses: dtolnay/rust-toolchain@stable
+      - run: cargo build --release
+        working-directory: ./service
       - run: npm ci
         working-directory: ./web
       - run: npx playwright install chromium
         working-directory: ./web
       - run: npm run build
         working-directory: ./web
+      - run: cp -r web/.output/public web/dist
+      - name: Start server
+        run: |
+          DATABASE_PATH=/tmp/health-travel-e2e.db SESSION_SIGNING_KEY=ci-e2e-key-min-32-bytes-long ./service/target/release/server &
+          for i in {1..30}; do
+            curl -sf http://localhost:8080/healthz && break
+            sleep 1
+          done
+          curl -sf http://localhost:8080/healthz || (echo "server failed to start"; exit 1)
       - run: npm run test:e2e
         working-directory: ./web
 
@@ -85,7 +96,7 @@ jobs:
           cargo crap --lcov lcov.info --baseline crap_baseline.json --fail-regression
 
   deploy:
-    needs: [service, web, crap-check]
+    needs: [service, web, e2e, crap-check]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
     steps:
