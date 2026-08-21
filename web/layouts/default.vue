@@ -74,7 +74,7 @@
 
     <footer class="border-t bg-white mt-12 dark:border-gray-800 dark:bg-gray-900">
       <div class="max-w-6xl mx-auto px-4 py-6 text-sm text-gray-500 dark:text-gray-400">
-        health-travel-aggregator — Built with Nuxt 3 &amp; Go.
+        health-travel-aggregator — Built with Nuxt 4 &amp; Rust.
       </div>
     </footer>
   </div>
