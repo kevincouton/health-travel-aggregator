@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: health_travel
+      POSTGRES_PASSWORD: health_travel
+      POSTGRES_DB: health_travel
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  api:
+    build: ./service
+    environment:
+      DATABASE_URL: postgres://health_travel:health_travel@postgres:5432/health_travel
+      APP_URL: http://localhost:3000
+      SESSION_SIGNING_KEY: ${SESSION_SIGNING_KEY:-local-dev-key-min-32-bytes-long}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+  web:
+    build: ./web
+    environment:
+      NUXT_PUBLIC_API_BASE: http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+volumes:
+  postgres_data:
