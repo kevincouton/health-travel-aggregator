@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  service:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - run: cargo fmt --check
+      - run: cargo clippy -- -D warnings
+      - run: cargo build --release
+      - run: cargo test
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npx vp check
+      - run: npm test
+      - run: npm run build
+
+  crap-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@cargo-llvm-cov
+      - run: cargo install cargo-crap --version 0.4.3
+      - name: CRAP check service workspace
+        working-directory: ./service
+        run: |
+          cargo llvm-cov --workspace --lcov --output-path lcov.info
+          python3 -c "import os; p=os.getcwd(); s=open('lcov.info').read(); open('lcov.info','w').write(s.replace(p+'/',''))"
+          cargo crap --workspace --lcov lcov.info --fail-above
+          cargo crap --workspace --lcov lcov.info --baseline crap_baseline.json --fail-regression
+      - name: CRAP check collectors crate
+        working-directory: ./collectors
+        run: |
+          cargo llvm-cov --lcov --output-path lcov.info
+          python3 -c "import os; p=os.getcwd(); s=open('lcov.info').read(); open('lcov.info','w').write(s.replace(p+'/',''))"
+          cargo crap --lcov lcov.info --fail-above
+          cargo crap --lcov lcov.info --baseline crap_baseline.json --fail-regression
+
+  deploy:
+    needs: [service, web, crap-check]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Deploy
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        run: |
+          echo "$DEPLOY_SSH_KEY" > deploy_key
+          chmod 600 deploy_key
+          service/deploy/deploy.sh "health-travel-aggregator"
+      - name: Clean up deploy key
+        if: always()
+        run: rm -f deploy_key

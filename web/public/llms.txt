@@ -1,0 +1,41 @@
+# Health Travel Aggregator
+
+> A curated marketplace for medical tourism — clinics, treatments, packages, and verified reviews.
+
+## Overview
+
+The Health Travel Aggregator connects patients with accredited clinics and treatment packages across borders. Providers publish clinics, treatments, and all-inclusive packages; patients search, compare, and request quotes; admins moderate listings and reviews.
+
+## Stack
+
+- Backend: Rust workspace (`service/`) with SQLite storage
+- Frontend: Nuxt 4 (`web/`) with Vue 3, Tailwind CSS, and Vite+
+- Deployment: systemd + Caddy
+
+## Key Features
+
+- Clinic and provider profiles with accreditation details
+- Treatment and package catalogs with transparent pricing
+- Location-based search and filtering
+- Quote request / inquiry flow for patients
+- Verified reviews and admin moderation queue
+- SEO-friendly pages, sitemap, and structured data
+
+## API Endpoints
+
+- `GET /healthz` — Health check
+- `GET /api/v1/clinics?limit=50` — List clinics
+- `GET /api/v1/clinics/:id` — Clinic detail
+- `GET /api/v1/packages?limit=50` — List packages
+- `GET /api/v1/packages/:id` — Package detail
+- `POST /api/v1/inquiries` — Submit a quote request
+
+## Pages
+
+- `/` — Home page with search and featured listings
+- `/about` — About the platform
+- `/sitemap.xml` — XML sitemap for crawlers
+
+## Contact
+
+- Website: https://health-travel.lucanian.app

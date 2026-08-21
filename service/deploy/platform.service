@@ -1,0 +1,14 @@
+[Unit]
+Description=health-travel-aggregator platform server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/health-travel-aggregator-server
+WorkingDirectory=/root/health-travel-aggregator
+Environment=DATABASE_PATH=/var/lib/health-travel-aggregator/health-travel-aggregator.db
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
