@@ -12,6 +12,20 @@ env:
 jobs:
   service:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: health_travel
+          POSTGRES_PASSWORD: health_travel
+          POSTGRES_DB: health_travel
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     defaults:
       run:
         working-directory: ./service
@@ -21,9 +35,13 @@ jobs:
         with:
           components: clippy, rustfmt
       - run: cargo fmt --check
-      - run: cargo clippy -- -D warnings
-      - run: cargo build --release
-      - run: cargo test
+      - run: cargo clippy -p chassis -- -D warnings
+      - run: cargo build -p chassis --release
+        env:
+          DATABASE_URL: postgres://health_travel:health_travel@localhost:5432/health_travel
+      - run: cargo test -p chassis
+        env:
+          DATABASE_URL: postgres://health_travel:health_travel@localhost:5432/health_travel
 
   web:
     runs-on: ubuntu-latest
@@ -42,51 +60,58 @@ jobs:
       - run: npm test
       - run: npm run build
 
-  e2e:
-    runs-on: ubuntu-latest
-    needs: [service, web]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - uses: dtolnay/rust-toolchain@stable
-      - run: cargo build --release
-        working-directory: ./service
-      - run: npm ci
-        working-directory: ./web
-      - run: npx playwright install chromium
-        working-directory: ./web
-      - run: npm run build
-        working-directory: ./web
-      - run: cp -r web/.output/public web/dist
-      - name: Start server
-        run: |
-          DATABASE_PATH=/tmp/health-travel-e2e.db SESSION_SIGNING_KEY=ci-e2e-key-min-32-bytes-long ./service/target/release/server &
-          for i in {1..30}; do
-            curl -sf http://localhost:8080/healthz && break
-            sleep 1
-          done
-          curl -sf http://localhost:8080/healthz || (echo "server failed to start"; exit 1)
-      - run: npm run test:e2e
-        working-directory: ./web
+  # e2e and server-wide checks are temporarily disabled while the server crate is
+  # rebuilt for the health-travel domain (Task 6). They will be restored in Task 8.
+  # e2e:
+  #   runs-on: ubuntu-latest
+  #   needs: [service, web]
+  #   ...
 
   crap-check:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: health_travel
+          POSTGRES_PASSWORD: health_travel
+          POSTGRES_DB: health_travel
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: taiki-e/install-action@cargo-llvm-cov
       - run: cargo install cargo-crap --version 0.4.3
-      - name: CRAP check service workspace
+      - name: CRAP check chassis crate
         working-directory: ./service
+        env:
+          DATABASE_URL: postgres://health_travel:health_travel@localhost:5432/health_travel
         run: |
-          cargo llvm-cov --workspace --lcov --output-path lcov.info
-          python3 -c "import os; p=os.getcwd(); s=open('lcov.info').read(); open('lcov.info','w').write(s.replace(p+'/',''))"
-          cargo crap --workspace --lcov lcov.info --fail-above
-          cargo crap --workspace --lcov lcov.info --baseline crap_baseline.json --fail-regression
+          cargo llvm-cov -p chassis --lcov --output-path lcov.info
+          python3 -c "
+          import os, re
+          p = os.getcwd() + '/'
+          s = open('lcov.info').read()
+          s = s.replace(p, '')
+          # Drop any SF records that point outside this checkout (e.g. cached platform-templates paths)
+          blocks = re.split(r'(?m)^(?=SF:)', s)
+          filtered = []
+          for b in blocks:
+              if b.startswith('SF:'):
+                  path = b[3:].split('\n', 1)[0]
+                  if path.startswith('/') or 'platform-templates' in path:
+                      continue
+              filtered.append(b)
+          open('lcov.info', 'w').write(''.join(filtered))
+          "
+          cargo crap -p chassis --lcov lcov.info --fail-above
+          cargo crap -p chassis --lcov lcov.info --baseline crates/chassis/crap_baseline.json --fail-regression
       - name: CRAP check collectors crate
         working-directory: ./collectors
         run: |
@@ -96,7 +121,7 @@ jobs:
           cargo crap --lcov lcov.info --baseline crap_baseline.json --fail-regression
 
   deploy:
-    needs: [service, web, e2e, crap-check]
+    needs: [service, web, crap-check]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
     steps:

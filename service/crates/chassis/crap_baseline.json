@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/minikin/cargo-crap/main/schemas/report-v1.json",
+  "version": "0.4.3",
+  "entries": [
+    {
+      "file": "crates/chassis/src/config.rs",
+      "function": "Config::load",
+      "line": 42,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0,
+      "crate": "chassis"
+    },
+    {
+      "file": "crates/chassis/src/config.rs",
+      "function": "env_flag",
+      "line": 79,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0,
+      "crate": "chassis"
+    },
+    {
+      "file": "crates/chassis/src/config.rs",
+      "function": "env_or",
+      "line": 71,
+      "cyclomatic": 3.0,
+      "coverage": 100.0,
+      "crap": 3.0,
+      "crate": "chassis"
+    },
+    {
+      "file": "crates/chassis/src/db.rs",
+      "function": "connect",
+      "line": 5,
+      "cyclomatic": 2.0,
+      "coverage": 0.0,
+      "crap": 2.0,
+      "crate": "chassis"
+    },
+    {
+      "file": "crates/chassis/src/db.rs",
+      "function": "migrate",
+      "line": 9,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0,
+      "crate": "chassis"
+    }
+  ]
+}
