@@ -8,3 +8,4 @@ pub mod error;
 pub mod locations;
 pub mod treatments;
 pub mod users;
+pub mod clinics;

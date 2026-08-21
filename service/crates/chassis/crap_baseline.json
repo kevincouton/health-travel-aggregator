@@ -39,8 +39,8 @@
       "function": "require_role",
       "line": 72,
       "cyclomatic": 3.0,
-      "coverage": 0.0,
-      "crap": 12.0
+      "coverage": 100.0,
+      "crap": 3.0
     },
     {
       "file": "crates/chassis/src/auth.rs",
@@ -57,6 +57,62 @@
       "cyclomatic": 2.0,
       "coverage": 100.0,
       "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
+      "function": "by_id",
+      "line": 105,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
+      "function": "by_slug",
+      "line": 113,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
+      "function": "create",
+      "line": 42,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
+      "function": "list_for_owner",
+      "line": 121,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
+      "function": "list_public",
+      "line": 131,
+      "cyclomatic": 3.0,
+      "coverage": 100.0,
+      "crap": 3.0
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
+      "function": "map_db_error",
+      "line": 34,
+      "cyclomatic": 3.0,
+      "coverage": 80.0,
+      "crap": 3.072
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
+      "function": "update",
+      "line": 70,
+      "cyclomatic": 4.0,
+      "coverage": 100.0,
+      "crap": 4.0
     },
     {
       "file": "crates/chassis/src/config.rs",
@@ -303,8 +359,8 @@
       "function": "by_id",
       "line": 56,
       "cyclomatic": 1.0,
-      "coverage": 0.0,
-      "crap": 2.0
+      "coverage": 100.0,
+      "crap": 1.0
     },
     {
       "file": "crates/chassis/src/users.rs",
@@ -319,31 +375,26 @@
       "function": "mark_verified",
       "line": 64,
       "cyclomatic": 2.0,
-      "coverage": 0.0,
-      "crap": 6.0
+      "coverage": 100.0,
+      "crap": 2.0
     }
   ],
   "diagnostics": {
-    "analyzed_files": 12,
-    "lcov_files": 26,
-    "matched_files": 12,
+    "analyzed_files": 13,
+    "lcov_files": 18,
+    "matched_files": 13,
     "source_only": {
       "count": 0,
       "examples": []
     },
     "lcov_only": {
-      "count": 14,
+      "count": 5,
       "examples": [
-        "/root/platform-templates/service/crates/chassis/src/analytics.rs",
-        "/root/platform-templates/service/crates/chassis/src/apikeys.rs",
-        "/root/platform-templates/service/crates/chassis/src/auth.rs",
-        "/root/platform-templates/service/crates/chassis/src/billing.rs",
-        "/root/platform-templates/service/crates/chassis/src/collectors/github_topic.rs",
-        "/root/platform-templates/service/crates/chassis/src/collectors.rs",
-        "/root/platform-templates/service/crates/chassis/src/config.rs",
-        "/root/platform-templates/service/crates/chassis/src/db.rs",
-        "/root/platform-templates/service/crates/chassis/src/platform.rs",
-        "/root/platform-templates/service/crates/chassis/src/scoring.rs"
+        "crates/server/src/extractors.rs",
+        "crates/server/src/handlers/auth.rs",
+        "crates/server/src/handlers/clinics.rs",
+        "crates/server/src/main.rs",
+        "crates/server/src/router.rs"
       ]
     }
   }
