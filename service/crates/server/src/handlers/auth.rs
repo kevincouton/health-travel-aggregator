@@ -5,7 +5,8 @@ use axum::{
     Json,
 };
 use chassis::{
-    auth, error::ApiError,
+    auth,
+    error::ApiError,
     users::{self, UserRole},
 };
 use serde::{Deserialize, Serialize};

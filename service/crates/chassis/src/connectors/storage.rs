@@ -1,5 +1,5 @@
-use async_trait::async_trait;
 use crate::error::ApiError;
+use async_trait::async_trait;
 
 #[async_trait]
 pub trait FileStorage: Send + Sync {
@@ -41,16 +41,13 @@ impl FileStorage for MockFileStorage {
         content: &[u8],
         content_type: &str,
     ) -> Result<String, ApiError> {
-        self.calls
-            .lock()
-            .await
-            .push(format!(
-                "upload {}/{} ({} bytes, {})",
-                bucket,
-                key,
-                content.len(),
-                content_type
-            ));
+        self.calls.lock().await.push(format!(
+            "upload {}/{} ({} bytes, {})",
+            bucket,
+            key,
+            content.len(),
+            content_type
+        ));
         Ok(format!("https://mock.example/{}/{}", bucket, key))
     }
 

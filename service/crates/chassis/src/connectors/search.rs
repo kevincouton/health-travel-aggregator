@@ -1,6 +1,6 @@
+use crate::error::ApiError;
 use async_trait::async_trait;
 use serde_json::Value;
-use crate::error::ApiError;
 
 #[async_trait]
 pub trait SearchEngine: Send + Sync {
@@ -40,10 +40,10 @@ impl SearchEngine for MockSearchEngine {
         doc_id: &str,
         document: Value,
     ) -> Result<(), ApiError> {
-        self.calls.lock().await.push(format!(
-            "index {}/{}: {}",
-            index, doc_id, document
-        ));
+        self.calls
+            .lock()
+            .await
+            .push(format!("index {}/{}: {}", index, doc_id, document));
         Ok(())
     }
 

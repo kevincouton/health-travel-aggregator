@@ -1,6 +1,6 @@
 use axum::body::Body;
-use chassis::connectors::email::MockEmailSender;
 use chassis::config::Config;
+use chassis::connectors::email::MockEmailSender;
 use chassis::db::DbPool;
 use server::{router::app, state::AppState};
 use std::sync::Arc;
@@ -56,7 +56,9 @@ async fn provider_register_and_login(pool: DbPool) {
     assert!(cookie.contains("HttpOnly"));
     assert!(cookie.contains("SameSite=Lax"));
 
-    let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX).await.unwrap();
+    let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
+        .await
+        .unwrap();
     let json: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(json["user"]["email"], "provider@example.com");
     assert_eq!(json["user"]["role"], "provider_admin");
@@ -110,7 +112,9 @@ async fn magic_link_flow(pool: DbPool) {
     let cookie = session_cookie_value(resp.headers()).expect("session cookie set on verify");
     assert!(cookie.starts_with("session="));
 
-    let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX).await.unwrap();
+    let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
+        .await
+        .unwrap();
     let json: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(json["user"]["email"], "patient@example.com");
     assert!(json["user"]["email_verified_at"].is_string());
@@ -126,7 +130,9 @@ async fn magic_link_flow(pool: DbPool) {
     let resp = router.clone().oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 200);
 
-    let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX).await.unwrap();
+    let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
+        .await
+        .unwrap();
     let json: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
     assert_eq!(json["email"], "patient@example.com");
 

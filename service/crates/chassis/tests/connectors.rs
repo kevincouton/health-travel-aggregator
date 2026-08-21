@@ -12,7 +12,10 @@ async fn mock_email_sender_records_sent_messages() {
     let sender = MockEmailSender::new();
 
     sender
-        .send_magic_link("user@example.com", "https://app.example.com/magic?token=abc")
+        .send_magic_link(
+            "user@example.com",
+            "https://app.example.com/magic?token=abc",
+        )
         .await
         .unwrap();
     sender
@@ -50,7 +53,10 @@ async fn mock_file_storage_records_upload_and_delete() {
 async fn mock_payment_provider_records_charge_and_refund() {
     let provider = MockPaymentProvider::new();
 
-    let tx_id = provider.create_charge(10000, "usd", "tok_visa").await.unwrap();
+    let tx_id = provider
+        .create_charge(10000, "usd", "tok_visa")
+        .await
+        .unwrap();
     assert!(tx_id.starts_with("tx-mock-"));
 
     provider.refund_charge(&tx_id).await.unwrap();

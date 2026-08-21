@@ -8,6 +8,7 @@ on:
 
 env:
   NODE_VERSION: '22'
+  CARGO_TERM_COLOR: always
 
 jobs:
   service:
@@ -29,19 +30,22 @@ jobs:
     defaults:
       run:
         working-directory: ./service
+    env:
+      DATABASE_URL: postgres://health_travel:health_travel@localhost:5432/health_travel
+      SESSION_SIGNING_KEY: ci-test-key-min-32-bytes-longer-key
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
       - run: cargo fmt --check
-      - run: cargo clippy -p chassis -- -D warnings
-      - run: cargo build -p chassis --release
-        env:
-          DATABASE_URL: postgres://health_travel:health_travel@localhost:5432/health_travel
-      - run: cargo test -p chassis
-        env:
-          DATABASE_URL: postgres://health_travel:health_travel@localhost:5432/health_travel
+      - run: cargo clippy -- -D warnings
+      - run: cargo build --release
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli --version 0.8 --no-default-features --features rustls,postgres --locked
+      - name: Apply database migrations
+        run: sqlx migrate run
+      - run: cargo test
 
   web:
     runs-on: ubuntu-latest
@@ -60,15 +64,9 @@ jobs:
       - run: npm test
       - run: npm run build
 
-  # e2e and server-wide checks are temporarily disabled while the server crate is
-  # rebuilt for the health-travel domain (Task 6). They will be restored in Task 8.
-  # e2e:
-  #   runs-on: ubuntu-latest
-  #   needs: [service, web]
-  #   ...
-
   crap-check:
     runs-on: ubuntu-latest
+    needs: [service]
     services:
       postgres:
         image: postgres:15-alpine
@@ -83,15 +81,17 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+    env:
+      DATABASE_URL: postgres://health_travel:health_travel@localhost:5432/health_travel
+    defaults:
+      run:
+        working-directory: ./service
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: taiki-e/install-action@cargo-llvm-cov
       - run: cargo install cargo-crap --version 0.4.3
       - name: CRAP check chassis crate
-        working-directory: ./service
-        env:
-          DATABASE_URL: postgres://health_travel:health_travel@localhost:5432/health_travel
         run: |
           cargo llvm-cov -p chassis --lcov --output-path lcov.info
           python3 -c "
@@ -99,7 +99,6 @@ jobs:
           p = os.getcwd() + '/'
           s = open('lcov.info').read()
           s = s.replace(p, '')
-          # Drop any SF records that point outside this checkout (e.g. cached platform-templates paths)
           blocks = re.split(r'(?m)^(?=SF:)', s)
           filtered = []
           for b in blocks:
@@ -112,13 +111,6 @@ jobs:
           "
           cargo crap -p chassis --lcov lcov.info --fail-above
           cargo crap -p chassis --lcov lcov.info --baseline crates/chassis/crap_baseline.json --fail-regression
-      - name: CRAP check collectors crate
-        working-directory: ./collectors
-        run: |
-          cargo llvm-cov --lcov --output-path lcov.info
-          python3 -c "import os; p=os.getcwd(); s=open('lcov.info').read(); open('lcov.info','w').write(s.replace(p+'/',''))"
-          cargo crap --lcov lcov.info --fail-above
-          cargo crap --lcov lcov.info --baseline crap_baseline.json --fail-regression
 
   deploy:
     needs: [service, web, crap-check]

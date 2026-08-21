@@ -1,6 +1,6 @@
+use crate::error::ApiError;
 use async_trait::async_trait;
 use std::sync::atomic::{AtomicU64, Ordering};
-use crate::error::ApiError;
 
 #[async_trait]
 pub trait PaymentProvider: Send + Sync {

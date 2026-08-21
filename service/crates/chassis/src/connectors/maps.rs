@@ -1,5 +1,5 @@
-use async_trait::async_trait;
 use crate::error::ApiError;
+use async_trait::async_trait;
 
 #[async_trait]
 pub trait MapsProvider: Send + Sync {
@@ -28,18 +28,15 @@ impl Default for MockMapsProvider {
 #[async_trait]
 impl MapsProvider for MockMapsProvider {
     async fn geocode(&self, address: &str) -> Result<(f64, f64), ApiError> {
-        self.calls
-            .lock()
-            .await
-            .push(format!("geocode {}", address));
+        self.calls.lock().await.push(format!("geocode {}", address));
         Ok((0.0, 0.0))
     }
 
     async fn distance_km(&self, from: (f64, f64), to: (f64, f64)) -> Result<f64, ApiError> {
-        self.calls.lock().await.push(format!(
-            "distance from {:?} to {:?}",
-            from, to
-        ));
+        self.calls
+            .lock()
+            .await
+            .push(format!("distance from {:?} to {:?}", from, to));
         Ok(0.0)
     }
 }
