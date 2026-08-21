@@ -64,6 +64,83 @@ jobs:
       - run: npm test
       - run: npm run build
 
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [service, web]
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: health_travel
+          POSTGRES_PASSWORD: health_travel
+          POSTGRES_DB: health_travel
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: postgres://health_travel:health_travel@localhost:5432/health_travel
+      SESSION_SIGNING_KEY: ci-test-key-min-32-bytes-longer-key
+      API_BASE_URL: http://localhost:8080
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: ./web
+      - name: Build server binary
+        working-directory: ./service
+        run: cargo build --release -p server
+      - name: Seed database
+        working-directory: ./service
+        run: cargo run --release --bin seed
+      - name: Start API server
+        working-directory: ./service
+        run: |
+          ./target/release/server > /tmp/server.log 2>&1 &
+          echo "SERVER_PID=$!" >> "$GITHUB_ENV"
+      - name: Build and preview web app
+        working-directory: ./web
+        run: |
+          npm run build
+          npm run preview > /tmp/web.log 2>&1 &
+          echo "WEB_PID=$!" >> "$GITHUB_ENV"
+      - name: Wait for services
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://localhost:8080/healthz > /dev/null; then
+              echo "API is ready"
+              break
+            fi
+            sleep 1
+          done
+          for i in {1..30}; do
+            if curl -sf http://localhost:3000/ > /dev/null; then
+              echo "Web is ready"
+              break
+            fi
+            sleep 1
+          done
+      - name: Install Playwright browsers
+        working-directory: ./web
+        run: npx playwright install --with-deps chromium
+      - name: Run Playwright tests
+        working-directory: ./web
+        run: npx playwright test
+      - name: Stop background servers
+        if: always()
+        run: |
+          kill "$SERVER_PID" "$WEB_PID" || true
+
   crap-check:
     runs-on: ubuntu-latest
     needs: [service]
@@ -113,7 +190,7 @@ jobs:
           cargo crap -p chassis --lcov lcov.info --baseline crates/chassis/crap_baseline.json --fail-regression
 
   deploy:
-    needs: [service, web, crap-check]
+    needs: [service, web, crap-check, e2e]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
     steps:

@@ -14,6 +14,15 @@ set -euo pipefail
 #        DEPLOY_KEY_FILE (ssh key path; default ./deploy_key)
 #        DEPLOY_BINARY   (remote binary path; default /usr/local/bin/<name>-server)
 # Run from the clone root (service/ and web/ subdirs).
+#
+# Operations note:
+# - The server binary runs embedded migrations at startup, so no separate
+#   `sqlx migrate run` step is required on the remote. If you prefer to run
+#   migrations explicitly, have the systemd unit execute `sqlx migrate run`
+#   before starting the service.
+# - The systemd unit must load the required environment variables
+#   (DATABASE_URL, SESSION_SIGNING_KEY, APP_URL, API_PORT, CORS_ORIGIN, etc.)
+#   from a secure env file such as /etc/default/<name>.
 
 PLATFORM="${1:?usage: deploy.sh <platform-name>}"
 : "${DEPLOY_HOST:?set DEPLOY_HOST}" "${DEPLOY_USER:?set DEPLOY_USER}"
@@ -57,7 +66,7 @@ rollback() {
 }
 
 echo "=== Building $PLATFORM ==="
-(cd service && cargo build --release)
+(cd service && cargo build --release -p server)
 cp "service/target/release/server" "${PLATFORM}-server.new"
 (cd web && npm ci && npx nuxt generate)
 
