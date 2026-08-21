@@ -1,5 +1,5 @@
 use crate::{
-    handlers::{admin, auth, clinics, inquiries, packages, treatments},
+    handlers::{admin, auth, clinics, inquiries, packages, reviews, treatments},
     state::AppState,
 };
 use axum::{
@@ -39,6 +39,7 @@ pub fn app(state: AppState) -> Router {
         .route("/me/inquiries/:id/status", patch(inquiries::update_status))
         .route("/clinics", get(clinics::list_public))
         .route("/clinics/:slug", get(clinics::by_slug))
+        .route("/clinics/:slug/reviews", post(reviews::create).get(reviews::list_for_clinic))
         .route("/clinics/:slug/packages", get(packages::public_list))
         .route("/packages/:id", get(packages::public_detail))
         .nest("/admin", admin_routes)

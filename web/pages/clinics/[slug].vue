@@ -66,6 +66,8 @@
         </div>
       </section>
 
+      <ReviewList :reviews="reviews || []" />
+
       <JsonLd :data="jsonLd" />
     </article>
   </div>
@@ -88,6 +90,14 @@ const { data: packages } = await useFetch(
   () => `${config.public.apiUrl}/clinics/${encodeURIComponent(slug)}/packages`,
   {
     key: `clinic-packages-${slug}`,
+    default: () => [],
+  }
+)
+
+const { data: reviews } = await useFetch(
+  () => `${config.public.apiUrl}/clinics/${encodeURIComponent(slug)}/reviews`,
+  {
+    key: `clinic-reviews-${slug}`,
     default: () => [],
   }
 )

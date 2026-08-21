@@ -467,6 +467,46 @@
       "crap": 1.0
     },
     {
+      "file": "crates/chassis/src/reviews.rs",
+      "function": "average_rating",
+      "line": 92,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/reviews.rs",
+      "function": "can_review",
+      "line": 27,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/reviews.rs",
+      "function": "create",
+      "line": 50,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/reviews.rs",
+      "function": "list_for_clinic",
+      "line": 78,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/reviews.rs",
+      "function": "map_db_error",
+      "line": 18,
+      "cyclomatic": 3.0,
+      "coverage": 80.0,
+      "crap": 3.072
+    },
+    {
       "file": "crates/chassis/src/treatments.rs",
       "function": "by_id",
       "line": 119,
@@ -532,9 +572,9 @@
     }
   ],
   "diagnostics": {
-    "analyzed_files": 15,
-    "lcov_files": 15,
-    "matched_files": 15,
+    "analyzed_files": 16,
+    "lcov_files": 16,
+    "matched_files": 16,
     "source_only": {
       "count": 0,
       "examples": []
