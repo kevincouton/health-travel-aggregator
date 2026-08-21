@@ -14,4 +14,9 @@ test.describe('Smoke', () => {
     await expect(page.getByRole('link', { name: 'Clinics' }).first()).toBeVisible()
     await expect(page.getByRole('link', { name: 'About' }).first()).toBeVisible()
   })
+
+  test('package detail page handles unknown package gracefully', async ({ page }) => {
+    await page.goto('/packages/00000000-0000-0000-0000-000000000000')
+    await expect(page.locator('text=Package not found.').first()).toBeVisible()
+  })
 })

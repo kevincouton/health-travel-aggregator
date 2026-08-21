@@ -412,3 +412,57 @@ async fn public_detail_shows_published_or_owner(pool: DbPool) {
     let resp = router.oneshot(req).await.unwrap();
     assert_eq!(resp.status(), 200);
 }
+
+#[sqlx::test]
+async fn public_detail_includes_clinic_and_treatment_names(pool: DbPool) {
+    let (state, _email) = setup_state(pool).await;
+    let pool = state.pool.clone();
+    let router = app(state);
+
+    let (clinic_id, owner_id) =
+        create_clinic(&pool, "enriched-detail@example.com", "enriched-detail-clinic").await;
+    let treatment_id = treatment_id(&pool, "dental-implants").await;
+    let provider = session_for_user(&pool, owner_id).await;
+
+    let req = axum::http::Request::builder()
+        .method("POST")
+        .uri(format!("/me/clinics/{}/packages", clinic_id))
+        .header("Content-Type", "application/json")
+        .header("Cookie", format!("session={}", provider))
+        .body(Body::from(package_body(treatment_id).to_string()))
+        .unwrap();
+    let resp = router.clone().oneshot(req).await.unwrap();
+    let json = body_json(resp).await;
+    let package_id = json["id"].as_str().unwrap();
+
+    let body = serde_json::json!({
+        "name": "Enriched Package",
+        "price_min": 100,
+        "price_max": 200,
+        "duration_days": 5,
+        "inclusions": ["consultation"],
+        "exclusions": ["flights"],
+        "is_published": true
+    });
+    let req = axum::http::Request::builder()
+        .method("PATCH")
+        .uri(format!("/me/clinics/{}/packages/{}", clinic_id, package_id))
+        .header("Content-Type", "application/json")
+        .header("Cookie", format!("session={}", provider))
+        .body(Body::from(body.to_string()))
+        .unwrap();
+    let resp = router.clone().oneshot(req).await.unwrap();
+    assert_eq!(resp.status(), 200);
+
+    let req = axum::http::Request::builder()
+        .uri(format!("/packages/{}", package_id))
+        .body(Body::empty())
+        .unwrap();
+    let resp = router.oneshot(req).await.unwrap();
+    assert_eq!(resp.status(), 200);
+    let json = body_json(resp).await;
+    assert_eq!(json["clinic_name"], "Test Clinic");
+    assert_eq!(json["clinic_slug"], "enriched-detail-clinic");
+    assert_eq!(json["treatment_name"], "Dental Implants");
+    assert_eq!(json["name"], "Enriched Package");
+}

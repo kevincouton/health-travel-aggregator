@@ -114,3 +114,12 @@ pub async fn by_slug(pool: &crate::db::DbPool, slug: &str) -> Result<Option<Trea
         .await
         .map_err(|_| ApiError::Internal)
 }
+
+/// Fetch a single treatment by its id.
+pub async fn by_id(pool: &crate::db::DbPool, id: Uuid) -> Result<Option<Treatment>, ApiError> {
+    sqlx::query_as::<_, Treatment>("SELECT * FROM treatments WHERE id = $1")
+        .bind(id)
+        .fetch_optional(pool)
+        .await
+        .map_err(|_| ApiError::Internal)
+}

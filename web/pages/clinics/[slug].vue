@@ -59,6 +59,13 @@
         </div>
       </div>
 
+      <section v-if="packages && packages.length" class="mt-10">
+        <h2 class="mb-5 text-xl font-bold text-gray-900 dark:text-gray-100">Packages</h2>
+        <div class="grid gap-5 grid-cols-1 md:grid-cols-2">
+          <PackageCard v-for="pkg in packages" :key="pkg.id" :pkg="pkg" />
+        </div>
+      </section>
+
       <JsonLd :data="jsonLd" />
     </article>
   </div>
@@ -76,6 +83,14 @@ const {
 } = await useFetch(() => `${config.public.apiUrl}/clinics/${encodeURIComponent(slug)}`, {
   key: `clinic-${slug}`,
 })
+
+const { data: packages } = await useFetch(
+  () => `${config.public.apiUrl}/clinics/${encodeURIComponent(slug)}/packages`,
+  {
+    key: `clinic-packages-${slug}`,
+    default: () => [],
+  }
+)
 
 useSeo({
   title: clinic.value?.name ? `${clinic.value.name} — Health Travel` : 'Clinic — Health Travel',

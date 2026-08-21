@@ -11,9 +11,10 @@ use chassis::{
     clinics::{self, ClinicStatus},
     error::ApiError,
     packages::{self, Package},
+    treatments,
     users::UserRole,
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Deserialize)]
@@ -163,32 +164,53 @@ pub async fn public_list(
     ))
 }
 
+#[derive(Serialize)]
+pub struct PublicPackageDetail {
+    #[serde(flatten)]
+    package: Package,
+    clinic_name: String,
+    clinic_slug: String,
+    treatment_name: String,
+}
+
 pub async fn public_detail(
     Path(id): Path<Uuid>,
     MaybeUser(maybe_user): MaybeUser,
     State(state): State<AppState>,
-) -> Result<Json<Package>, ApiError> {
+) -> Result<Json<PublicPackageDetail>, ApiError> {
     let package = packages::by_id(&state.pool, id)
         .await?
         .ok_or(ApiError::NotFound)?;
 
-    if package.is_published {
-        return Ok(Json(package));
-    }
-
-    let can_view_unpublished = match maybe_user {
-        Some(user) => {
-            let clinic = clinics::by_id(&state.pool, package.clinic_id)
-                .await?
-                .ok_or(ApiError::NotFound)?;
-            user.role == UserRole::PlatformAdmin || clinic.owner_user_id == user.id
+    let can_view_unpublished = if package.is_published {
+        true
+    } else {
+        match maybe_user {
+            Some(user) => {
+                let clinic = clinics::by_id(&state.pool, package.clinic_id)
+                    .await?
+                    .ok_or(ApiError::NotFound)?;
+                user.role == UserRole::PlatformAdmin || clinic.owner_user_id == user.id
+            }
+            None => false,
         }
-        None => false,
     };
 
-    if can_view_unpublished {
-        Ok(Json(package))
-    } else {
-        Err(ApiError::NotFound)
+    if !can_view_unpublished {
+        return Err(ApiError::NotFound);
     }
+
+    let clinic = clinics::by_id(&state.pool, package.clinic_id)
+        .await?
+        .ok_or(ApiError::NotFound)?;
+    let treatment = treatments::by_id(&state.pool, package.treatment_id)
+        .await?
+        .ok_or(ApiError::NotFound)?;
+
+    Ok(Json(PublicPackageDetail {
+        package,
+        clinic_name: clinic.name,
+        clinic_slug: clinic.slug,
+        treatment_name: treatment.name,
+    }))
 }
