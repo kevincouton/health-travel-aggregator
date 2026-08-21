@@ -37,6 +37,42 @@
       "coverage": 100.0,
       "crap": 7.0,
       "crate": "chassis"
+    },
+    {
+      "file": "crates/chassis/src/users.rs",
+      "function": "by_email",
+      "line": 47,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0,
+      "crate": "chassis"
+    },
+    {
+      "file": "crates/chassis/src/users.rs",
+      "function": "by_id",
+      "line": 55,
+      "cyclomatic": 1.0,
+      "coverage": 0.0,
+      "crap": 2.0,
+      "crate": "chassis"
+    },
+    {
+      "file": "crates/chassis/src/users.rs",
+      "function": "create",
+      "line": 25,
+      "cyclomatic": 1.0,
+      "coverage": 95.2,
+      "crap": 1.0,
+      "crate": "chassis"
+    },
+    {
+      "file": "crates/chassis/src/users.rs",
+      "function": "mark_verified",
+      "line": 63,
+      "cyclomatic": 2.0,
+      "coverage": 0.0,
+      "crap": 6.0,
+      "crate": "chassis"
     }
   ]
 }
