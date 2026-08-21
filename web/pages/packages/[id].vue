@@ -74,8 +74,6 @@
           </NuxtLink>
         </div>
       </div>
-
-      <JsonLd :data="jsonLd" />
     </article>
   </div>
 </template>
@@ -103,43 +101,36 @@ const formattedPrice = computed(() => {
   return null
 })
 
-useSeo({
-  title: pkg.value?.name ? `${pkg.value.name} — Health Travel` : 'Package — Health Travel',
-  description: pkg.value?.treatment_name
-    ? `${pkg.value.name} for ${pkg.value.treatment_name}. Request a quote on Health Travel.`
-    : 'Medical tourism package details on Health Travel.',
-  keywords: [
-    pkg.value?.name,
-    pkg.value?.treatment_name,
-    pkg.value?.clinic_name,
-    'medical tourism',
-    'health travel',
-    'package',
-  ].filter(Boolean),
-})
-
 const jsonLd = computed(() =>
   pkg.value
     ? {
-        '@context': 'https://schema.org',
         '@type': 'Product',
         name: pkg.value.name,
         description: `Medical tourism package for ${pkg.value.treatment_name || 'treatment'}.`,
-        url: `https://health-travel.lucanian.app/packages/${pkg.value.id}`,
+        url: `${config.public.siteUrl}/packages/${pkg.value.id}`,
         brand: pkg.value.clinic_name
           ? {
               '@type': 'MedicalBusiness',
               name: pkg.value.clinic_name,
-              url: `https://health-travel.lucanian.app/clinics/${pkg.value.clinic_slug}`,
+              url: `${config.public.siteUrl}/clinics/${pkg.value.clinic_slug}`,
             }
           : undefined,
         offers: {
           '@type': 'Offer',
           priceCurrency: 'USD',
           price: pkg.value.price_min != null ? String(pkg.value.price_min) : undefined,
-          url: `https://health-travel.lucanian.app/quote?package=${pkg.value.id}`,
+          url: `${config.public.siteUrl}/quote?package=${pkg.value.id}`,
         },
       }
-    : {}
+    : undefined
 )
+
+usePageSeo({
+  title: pkg.value?.name ? `${pkg.value.name} — Health Travel` : 'Package — Health Travel',
+  description: pkg.value?.treatment_name
+    ? `${pkg.value.name} for ${pkg.value.treatment_name}. Request a quote on Health Travel.`
+    : 'Medical tourism package details on Health Travel.',
+  path: `/packages/${id}`,
+  jsonLd,
+})
 </script>

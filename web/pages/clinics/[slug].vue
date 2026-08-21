@@ -67,8 +67,6 @@
       </section>
 
       <ReviewList :reviews="reviews || []" />
-
-      <JsonLd :data="jsonLd" />
     </article>
   </div>
 </template>
@@ -102,34 +100,28 @@ const { data: reviews } = await useFetch(
   }
 )
 
-useSeo({
-  title: clinic.value?.name ? `${clinic.value.name} — Health Travel` : 'Clinic — Health Travel',
-  description: clinic.value?.description
-    ? `${clinic.value.description}. Located in ${clinic.value.city || ''}, ${clinic.value.country_code || ''}.`
-    : 'Clinic profile on Health Travel.',
-  keywords: [
-    clinic.value?.name,
-    clinic.value?.city,
-    'clinic',
-    'medical tourism',
-    'health travel',
-  ].filter(Boolean),
-})
-
 const jsonLd = computed(() =>
   clinic.value
     ? {
-        '@context': 'https://schema.org',
         '@type': 'MedicalBusiness',
         name: clinic.value.name,
         description: clinic.value.description,
-        url: `https://health-travel.lucanian.app/clinics/${clinic.value.slug}`,
+        url: `${config.public.siteUrl}/clinics/${clinic.value.slug}`,
         address: {
           '@type': 'PostalAddress',
           addressLocality: clinic.value.city,
           addressCountry: clinic.value.country_code,
         },
       }
-    : {}
+    : undefined
 )
+
+usePageSeo({
+  title: clinic.value?.name ? `${clinic.value.name} — Health Travel` : 'Clinic — Health Travel',
+  description: clinic.value?.description
+    ? `${clinic.value.description}. Located in ${clinic.value.city || ''}, ${clinic.value.country_code || ''}.`
+    : 'Clinic profile on Health Travel.',
+  path: `/clinics/${slug}`,
+  jsonLd,
+})
 </script>

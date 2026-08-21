@@ -19,4 +19,16 @@ test.describe('Smoke', () => {
     await page.goto('/packages/00000000-0000-0000-0000-000000000000')
     await expect(page.locator('text=Package not found.').first()).toBeVisible()
   })
+
+  test('sitemap.xml is served with static routes', async ({ page }) => {
+    const response = await page.goto('/sitemap.xml')
+    expect(response).not.toBeNull()
+    expect(response?.headers()['content-type']).toContain('application/xml')
+
+    const body = await response.text()
+    expect(body).toContain('<urlset')
+    expect(body).toContain('/treatments')
+    expect(body).toContain('/clinics')
+    expect(body).toContain('/about')
+  })
 })
