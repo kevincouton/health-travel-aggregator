@@ -39,8 +39,8 @@
       "function": "require_role",
       "line": 72,
       "cyclomatic": 3.0,
-      "coverage": 100.0,
-      "crap": 3.0
+      "coverage": 0.0,
+      "crap": 12.0
     },
     {
       "file": "crates/chassis/src/auth.rs",
@@ -87,8 +87,8 @@
       "function": "list_by_status",
       "line": 260,
       "cyclomatic": 1.0,
-      "coverage": 100.0,
-      "crap": 1.0
+      "coverage": 0.0,
+      "crap": 2.0
     },
     {
       "file": "crates/chassis/src/clinics.rs",
@@ -143,8 +143,8 @@
       "function": "update_status",
       "line": 270,
       "cyclomatic": 1.0,
-      "coverage": 100.0,
-      "crap": 1.0
+      "coverage": 0.0,
+      "crap": 2.0
     },
     {
       "file": "crates/chassis/src/config.rs",
@@ -339,6 +339,54 @@
       "crap": 7.0
     },
     {
+      "file": "crates/chassis/src/inquiries.rs",
+      "function": "by_id",
+      "line": 128,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/inquiries.rs",
+      "function": "create",
+      "line": 39,
+      "cyclomatic": 8.0,
+      "coverage": 100.0,
+      "crap": 8.0
+    },
+    {
+      "file": "crates/chassis/src/inquiries.rs",
+      "function": "list_for_patient",
+      "line": 82,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/inquiries.rs",
+      "function": "list_for_provider",
+      "line": 92,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/inquiries.rs",
+      "function": "map_db_error",
+      "line": 31,
+      "cyclomatic": 3.0,
+      "coverage": 0.0,
+      "crap": 12.0
+    },
+    {
+      "file": "crates/chassis/src/inquiries.rs",
+      "function": "update_status",
+      "line": 107,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
       "file": "crates/chassis/src/locations.rs",
       "function": "list",
       "line": 59,
@@ -420,6 +468,14 @@
     },
     {
       "file": "crates/chassis/src/treatments.rs",
+      "function": "by_id",
+      "line": 119,
+      "cyclomatic": 1.0,
+      "coverage": 0.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/treatments.rs",
       "function": "by_slug",
       "line": 110,
       "cyclomatic": 1.0,
@@ -455,8 +511,8 @@
       "function": "by_id",
       "line": 56,
       "cyclomatic": 1.0,
-      "coverage": 100.0,
-      "crap": 1.0
+      "coverage": 0.0,
+      "crap": 2.0
     },
     {
       "file": "crates/chassis/src/users.rs",
@@ -471,30 +527,21 @@
       "function": "mark_verified",
       "line": 64,
       "cyclomatic": 2.0,
-      "coverage": 100.0,
-      "crap": 2.0
+      "coverage": 0.0,
+      "crap": 6.0
     }
   ],
   "diagnostics": {
-    "analyzed_files": 14,
-    "lcov_files": 22,
-    "matched_files": 14,
+    "analyzed_files": 15,
+    "lcov_files": 15,
+    "matched_files": 15,
     "source_only": {
       "count": 0,
       "examples": []
     },
     "lcov_only": {
-      "count": 8,
-      "examples": [
-        "/root/health-travel-aggregator/service/crates/server/src/extractors.rs",
-        "/root/health-travel-aggregator/service/crates/server/src/handlers/admin.rs",
-        "/root/health-travel-aggregator/service/crates/server/src/handlers/auth.rs",
-        "/root/health-travel-aggregator/service/crates/server/src/handlers/clinics.rs",
-        "/root/health-travel-aggregator/service/crates/server/src/handlers/packages.rs",
-        "/root/health-travel-aggregator/service/crates/server/src/handlers/treatments.rs",
-        "/root/health-travel-aggregator/service/crates/server/src/main.rs",
-        "/root/health-travel-aggregator/service/crates/server/src/router.rs"
-      ]
+      "count": 0,
+      "examples": []
     }
   }
 }
