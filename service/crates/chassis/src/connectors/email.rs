@@ -4,7 +4,12 @@ use async_trait::async_trait;
 #[async_trait]
 pub trait EmailSender: Send + Sync {
     async fn send_magic_link(&self, to: &str, link: &str) -> Result<(), ApiError>;
-    async fn send_inquiry_notification(&self, to: &str, clinic_name: &str) -> Result<(), ApiError>;
+    async fn send_inquiry_notification(
+        &self,
+        to: &str,
+        clinic_name: &str,
+        patient_email: &str,
+    ) -> Result<(), ApiError>;
 }
 
 pub struct MockEmailSender {
@@ -35,11 +40,19 @@ impl EmailSender for MockEmailSender {
         Ok(())
     }
 
-    async fn send_inquiry_notification(&self, to: &str, clinic_name: &str) -> Result<(), ApiError> {
+    async fn send_inquiry_notification(
+        &self,
+        to: &str,
+        clinic_name: &str,
+        patient_email: &str,
+    ) -> Result<(), ApiError> {
         self.sent
             .lock()
             .await
-            .push(format!("inquiry to {} for {}", to, clinic_name));
+            .push(format!(
+                "inquiry to {} for {} from {}",
+                to, clinic_name, patient_email
+            ));
         Ok(())
     }
 }

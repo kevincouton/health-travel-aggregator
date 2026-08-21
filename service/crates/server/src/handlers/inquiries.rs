@@ -5,9 +5,10 @@ use axum::{
 };
 use chassis::{
     auth,
+    clinics,
     error::ApiError,
     inquiries::{self, Inquiry, InquiryStatus},
-    users::UserRole,
+    users::{self, UserRole},
 };
 use serde::Deserialize;
 use uuid::Uuid;
@@ -41,6 +42,24 @@ pub async fn create(
         &req.contact_email,
     )
     .await?;
+
+    if let Some(clinic) = clinics::by_id(&state.pool, req.clinic_id).await? {
+        if let Some(owner) = users::by_id(&state.pool, clinic.owner_user_id).await? {
+            if let Err(e) = state
+                .email
+                .send_inquiry_notification(&owner.email, &clinic.name, &inquiry.contact_email)
+                .await
+            {
+                tracing::warn!(
+                    error = ?e,
+                    owner_email = %owner.email,
+                    clinic_id = %clinic.id,
+                    "failed to send inquiry notification email"
+                );
+            }
+        }
+    }
+
     Ok(Json(inquiry))
 }
 

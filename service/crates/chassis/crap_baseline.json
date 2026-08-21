@@ -157,7 +157,7 @@
     {
       "file": "crates/chassis/src/connectors/email.rs",
       "function": "MockEmailSender::default",
-      "line": 23,
+      "line": 28,
       "cyclomatic": 1.0,
       "coverage": 0.0,
       "crap": 2.0
@@ -165,7 +165,7 @@
     {
       "file": "crates/chassis/src/connectors/email.rs",
       "function": "MockEmailSender::new",
-      "line": 15,
+      "line": 20,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0
@@ -173,18 +173,18 @@
     {
       "file": "crates/chassis/src/connectors/email.rs",
       "function": "MockEmailSender::send_inquiry_notification",
-      "line": 38,
+      "line": 43,
       "cyclomatic": 1.0,
-      "coverage": 100.0,
-      "crap": 1.0
+      "coverage": 66.66666666666666,
+      "crap": 1.0370370370370372
     },
     {
       "file": "crates/chassis/src/connectors/email.rs",
       "function": "MockEmailSender::send_magic_link",
-      "line": 30,
+      "line": 35,
       "cyclomatic": 1.0,
-      "coverage": 100.0,
-      "crap": 1.0
+      "coverage": 50.0,
+      "crap": 1.125
     },
     {
       "file": "crates/chassis/src/connectors/maps.rs",

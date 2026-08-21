@@ -303,6 +303,34 @@ async fn package_must_belong_to_clinic(pool: DbPool) {
     assert_eq!(resp.status(), 400);
 }
 
+#[sqlx::test]
+async fn inquiry_creation_sends_email_notification_to_clinic_owner(pool: DbPool) {
+    let (state, email) = setup_state(pool).await;
+    let pool = state.pool.clone();
+    let router = app(state);
+
+    let owner_email = "owner-notify@example.com";
+    let (clinic_id, _owner_id) = create_clinic(&pool, owner_email, "notify-clinic").await;
+    let treatment_id = treatment_id(&pool, "dental-implants").await;
+    let package_id = create_package(&pool, clinic_id, treatment_id).await;
+    let patient = session_for(&pool, "patient-notify@example.com", UserRole::Patient).await;
+
+    let req = axum::http::Request::builder()
+        .method("POST")
+        .uri("/inquiries")
+        .header("Content-Type", "application/json")
+        .header("Cookie", format!("session={}", patient))
+        .body(Body::from(inquiry_body(clinic_id, Some(package_id)).to_string()))
+        .unwrap();
+    let resp = router.oneshot(req).await.unwrap();
+    assert_eq!(resp.status(), 200);
+
+    let sent = email.sent.lock().await;
+    assert_eq!(sent.len(), 1);
+    let expected = format!("inquiry to {} for Test Clinic from patient@example.com", owner_email);
+    assert_eq!(sent[0], expected);
+}
+
 async fn session_for_user(pool: &DbPool, user_id: Uuid) -> String {
     auth::create_session(pool, user_id, 1).await.unwrap()
 }

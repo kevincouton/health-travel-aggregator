@@ -19,7 +19,7 @@ async fn mock_email_sender_records_sent_messages() {
         .await
         .unwrap();
     sender
-        .send_inquiry_notification("user@example.com", "Acme Clinic")
+        .send_inquiry_notification("user@example.com", "Acme Clinic", "patient@example.com")
         .await
         .unwrap();
 
@@ -27,7 +27,10 @@ async fn mock_email_sender_records_sent_messages() {
     assert_eq!(sent.len(), 2);
     assert!(sent[0].contains("magic-link to user@example.com"));
     assert!(sent[0].contains("https://app.example.com/magic?token=abc"));
-    assert_eq!(sent[1], "inquiry to user@example.com for Acme Clinic");
+    assert_eq!(
+        sent[1],
+        "inquiry to user@example.com for Acme Clinic from patient@example.com"
+    );
 }
 
 #[tokio::test]
