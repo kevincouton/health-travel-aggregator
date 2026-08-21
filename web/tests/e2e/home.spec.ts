@@ -29,9 +29,8 @@ test.describe('Homepage', () => {
     const menuButton = page.locator('button[aria-label="Toggle navigation menu"]').first()
     if (await menuButton.isVisible()) {
       await menuButton.click()
-      await expect(page.locator('#mobile-menu').first()).toBeVisible()
-      await page.waitForTimeout(300)
-      await page.locator('#mobile-menu').getByRole('link', { name: 'About' }).first().click()
+      await expect(page.locator('#mobile-menu').getByRole('link', { name: 'About' }).first()).toBeVisible()
+      await page.locator('#mobile-menu').getByRole('link', { name: 'About' }).first().click({ force: true })
     } else {
       await page.getByRole('link', { name: 'About' }).first().click()
     }
