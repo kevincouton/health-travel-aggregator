@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use axum::{extract::FromRequestParts, http::request::Parts};
-use chassis::{auth, error::ApiError, users::User};
+use chassis::{auth, error::ApiError, users::{User, UserRole}};
 
 use crate::state::AppState;
 
@@ -26,6 +26,25 @@ impl FromRequestParts<AppState> for CurrentUser {
                 user.map(CurrentUser).ok_or(ApiError::Unauthorized)
             }
             None => Err(ApiError::Unauthorized),
+        }
+    }
+}
+
+pub struct AdminUser(pub User);
+
+#[async_trait]
+impl FromRequestParts<AppState> for AdminUser {
+    type Rejection = ApiError;
+
+    async fn from_request_parts(
+        parts: &mut Parts,
+        state: &AppState,
+    ) -> Result<Self, Self::Rejection> {
+        let CurrentUser(user) = CurrentUser::from_request_parts(parts, state).await?;
+        if user.role == UserRole::PlatformAdmin {
+            Ok(AdminUser(user))
+        } else {
+            Err(ApiError::Forbidden)
         }
     }
 }

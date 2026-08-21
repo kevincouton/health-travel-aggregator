@@ -84,6 +84,14 @@
     },
     {
       "file": "crates/chassis/src/clinics.rs",
+      "function": "list_by_status",
+      "line": 158,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
       "function": "list_for_owner",
       "line": 121,
       "cyclomatic": 1.0,
@@ -113,6 +121,14 @@
       "cyclomatic": 4.0,
       "coverage": 100.0,
       "crap": 4.0
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
+      "function": "update_status",
+      "line": 168,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
     },
     {
       "file": "crates/chassis/src/config.rs",
@@ -381,20 +397,21 @@
   ],
   "diagnostics": {
     "analyzed_files": 13,
-    "lcov_files": 18,
+    "lcov_files": 19,
     "matched_files": 13,
     "source_only": {
       "count": 0,
       "examples": []
     },
     "lcov_only": {
-      "count": 5,
+      "count": 6,
       "examples": [
-        "crates/server/src/extractors.rs",
-        "crates/server/src/handlers/auth.rs",
-        "crates/server/src/handlers/clinics.rs",
-        "crates/server/src/main.rs",
-        "crates/server/src/router.rs"
+        "/root/health-travel-aggregator/service/crates/server/src/extractors.rs",
+        "/root/health-travel-aggregator/service/crates/server/src/handlers/admin.rs",
+        "/root/health-travel-aggregator/service/crates/server/src/handlers/auth.rs",
+        "/root/health-travel-aggregator/service/crates/server/src/handlers/clinics.rs",
+        "/root/health-travel-aggregator/service/crates/server/src/main.rs",
+        "/root/health-travel-aggregator/service/crates/server/src/router.rs"
       ]
     }
   }

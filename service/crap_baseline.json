@@ -84,6 +84,14 @@
     },
     {
       "file": "crates/chassis/src/clinics.rs",
+      "function": "list_by_status",
+      "line": 158,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
       "function": "list_for_owner",
       "line": 121,
       "cyclomatic": 1.0,
@@ -113,6 +121,14 @@
       "cyclomatic": 4.0,
       "coverage": 100.0,
       "crap": 4.0
+    },
+    {
+      "file": "crates/chassis/src/clinics.rs",
+      "function": "update_status",
+      "line": 168,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
     },
     {
       "file": "crates/chassis/src/config.rs",
@@ -380,11 +396,43 @@
     },
     {
       "file": "crates/server/src/extractors.rs",
+      "function": "AdminUser::from_request_parts",
+      "line": 39,
+      "cyclomatic": 3.0,
+      "coverage": 100.0,
+      "crap": 3.0
+    },
+    {
+      "file": "crates/server/src/extractors.rs",
       "function": "CurrentUser::from_request_parts",
       "line": 13,
       "cyclomatic": 4.0,
       "coverage": 100.0,
       "crap": 4.0
+    },
+    {
+      "file": "crates/server/src/handlers/admin.rs",
+      "function": "list_clinics",
+      "line": 30,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/server/src/handlers/admin.rs",
+      "function": "parse_status_query",
+      "line": 20,
+      "cyclomatic": 6.0,
+      "coverage": 100.0,
+      "crap": 6.0
+    },
+    {
+      "file": "crates/server/src/handlers/admin.rs",
+      "function": "update_clinic_status",
+      "line": 39,
+      "cyclomatic": 3.0,
+      "coverage": 100.0,
+      "crap": 3.0
     },
     {
       "file": "crates/server/src/handlers/auth.rs",
@@ -516,9 +564,9 @@
     }
   ],
   "diagnostics": {
-    "analyzed_files": 18,
-    "lcov_files": 18,
-    "matched_files": 18,
+    "analyzed_files": 19,
+    "lcov_files": 19,
+    "matched_files": 19,
     "source_only": {
       "count": 0,
       "examples": []

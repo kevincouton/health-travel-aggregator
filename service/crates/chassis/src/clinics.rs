@@ -1,10 +1,10 @@
 use crate::{db::DbPool, error::ApiError};
 use chrono::{DateTime, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, sqlx::Type, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, sqlx::Type, Serialize, Deserialize, PartialEq, Eq)]
 #[sqlx(type_name = "clinic_status", rename_all = "snake_case")]
 #[serde(rename_all = "snake_case")]
 pub enum ClinicStatus {
@@ -153,4 +153,32 @@ pub async fn list_public(
         .fetch_all(pool)
         .await
         .map_err(|_| ApiError::Internal)
+}
+
+pub async fn list_by_status(pool: &DbPool, status: ClinicStatus) -> Result<Vec<Clinic>, ApiError> {
+    sqlx::query_as::<_, Clinic>(
+        "SELECT * FROM clinics WHERE status = $1 ORDER BY created_at DESC",
+    )
+    .bind(status)
+    .fetch_all(pool)
+    .await
+    .map_err(|_| ApiError::Internal)
+}
+
+pub async fn update_status(
+    pool: &DbPool,
+    id: Uuid,
+    status: ClinicStatus,
+) -> Result<Option<Clinic>, ApiError> {
+    sqlx::query_as::<_, Clinic>(
+        "UPDATE clinics
+         SET status = $1, updated_at = NOW()
+         WHERE id = $2
+         RETURNING id, owner_user_id, name, slug, country_code, city, accreditations, description, status, created_at",
+    )
+    .bind(status)
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+    .map_err(map_db_error)
 }
