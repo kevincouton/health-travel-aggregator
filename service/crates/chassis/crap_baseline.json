@@ -4,29 +4,11 @@
   "entries": [
     {
       "file": "crates/chassis/src/config.rs",
-      "function": "Config::load",
-      "line": 42,
+      "function": "Config::from_env",
+      "line": 11,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0,
-      "crate": "chassis"
-    },
-    {
-      "file": "crates/chassis/src/config.rs",
-      "function": "env_flag",
-      "line": 79,
-      "cyclomatic": 1.0,
-      "coverage": 100.0,
-      "crap": 1.0,
-      "crate": "chassis"
-    },
-    {
-      "file": "crates/chassis/src/config.rs",
-      "function": "env_or",
-      "line": 71,
-      "cyclomatic": 3.0,
-      "coverage": 100.0,
-      "crap": 3.0,
       "crate": "chassis"
     },
     {
@@ -45,6 +27,15 @@
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0,
+      "crate": "chassis"
+    },
+    {
+      "file": "crates/chassis/src/error.rs",
+      "function": "ApiError::into_response",
+      "line": 23,
+      "cyclomatic": 7.0,
+      "coverage": 100.0,
+      "crap": 7.0,
       "crate": "chassis"
     }
   ]
