@@ -141,7 +141,7 @@
     {
       "file": "crates/chassis/src/clinics.rs",
       "function": "update_status",
-      "line": 270,
+      "line": 268,
       "cyclomatic": 1.0,
       "coverage": 0.0,
       "crap": 2.0
@@ -221,7 +221,23 @@
     {
       "file": "crates/chassis/src/connectors/payments.rs",
       "function": "MockPaymentProvider::create_charge",
-      "line": 39,
+      "line": 48,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/payments.rs",
+      "function": "MockPaymentProvider::create_customer",
+      "line": 71,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/connectors/payments.rs",
+      "function": "MockPaymentProvider::create_subscription",
+      "line": 81,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0
@@ -229,7 +245,7 @@
     {
       "file": "crates/chassis/src/connectors/payments.rs",
       "function": "MockPaymentProvider::default",
-      "line": 32,
+      "line": 41,
       "cyclomatic": 1.0,
       "coverage": 0.0,
       "crap": 2.0
@@ -237,7 +253,7 @@
     {
       "file": "crates/chassis/src/connectors/payments.rs",
       "function": "MockPaymentProvider::new",
-      "line": 23,
+      "line": 32,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0
@@ -245,7 +261,7 @@
     {
       "file": "crates/chassis/src/connectors/payments.rs",
       "function": "MockPaymentProvider::refund_charge",
-      "line": 54,
+      "line": 63,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0
@@ -341,7 +357,7 @@
     {
       "file": "crates/chassis/src/inquiries.rs",
       "function": "by_id",
-      "line": 128,
+      "line": 131,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0
@@ -359,16 +375,16 @@
       "function": "list_for_patient",
       "line": 82,
       "cyclomatic": 1.0,
-      "coverage": 100.0,
-      "crap": 1.0
+      "coverage": 75.0,
+      "crap": 1.015625
     },
     {
       "file": "crates/chassis/src/inquiries.rs",
       "function": "list_for_provider",
-      "line": 92,
+      "line": 95,
       "cyclomatic": 1.0,
-      "coverage": 100.0,
-      "crap": 1.0
+      "coverage": 85.71428571428571,
+      "crap": 1.0029154518950438
     },
     {
       "file": "crates/chassis/src/inquiries.rs",
@@ -381,10 +397,10 @@
     {
       "file": "crates/chassis/src/inquiries.rs",
       "function": "update_status",
-      "line": 107,
+      "line": 110,
       "cyclomatic": 1.0,
-      "coverage": 100.0,
-      "crap": 1.0
+      "coverage": 95.0,
+      "crap": 1.000125
     },
     {
       "file": "crates/chassis/src/locations.rs",
@@ -469,7 +485,7 @@
     {
       "file": "crates/chassis/src/reviews.rs",
       "function": "average_rating",
-      "line": 92,
+      "line": 94,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0
@@ -493,7 +509,7 @@
     {
       "file": "crates/chassis/src/reviews.rs",
       "function": "list_for_clinic",
-      "line": 78,
+      "line": 80,
       "cyclomatic": 1.0,
       "coverage": 100.0,
       "crap": 1.0
@@ -505,6 +521,38 @@
       "cyclomatic": 3.0,
       "coverage": 80.0,
       "crap": 3.072
+    },
+    {
+      "file": "crates/chassis/src/subscriptions.rs",
+      "function": "create_subscription",
+      "line": 79,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/subscriptions.rs",
+      "function": "default_plan",
+      "line": 69,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
+    },
+    {
+      "file": "crates/chassis/src/subscriptions.rs",
+      "function": "get_active_for_user",
+      "line": 99,
+      "cyclomatic": 1.0,
+      "coverage": 100.0,
+      "crap": 1.0
+    },
+    {
+      "file": "crates/chassis/src/subscriptions.rs",
+      "function": "seed_plans",
+      "line": 47,
+      "cyclomatic": 2.0,
+      "coverage": 100.0,
+      "crap": 2.0
     },
     {
       "file": "crates/chassis/src/treatments.rs",
@@ -572,9 +620,9 @@
     }
   ],
   "diagnostics": {
-    "analyzed_files": 16,
-    "lcov_files": 16,
-    "matched_files": 16,
+    "analyzed_files": 17,
+    "lcov_files": 17,
+    "matched_files": 17,
     "source_only": {
       "count": 0,
       "examples": []

@@ -10,5 +10,6 @@ pub mod inquiries;
 pub mod locations;
 pub mod packages;
 pub mod reviews;
+pub mod subscriptions;
 pub mod treatments;
 pub mod users;

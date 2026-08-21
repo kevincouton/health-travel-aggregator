@@ -10,7 +10,7 @@
 //! ```
 
 use anyhow::Context;
-use chassis::{auth, db, locations, treatments, users::UserRole};
+use chassis::{auth, db, locations, subscriptions, treatments, users::UserRole};
 use sqlx::{query, query_as};
 use uuid::Uuid;
 
@@ -41,6 +41,10 @@ async fn main() -> anyhow::Result<()> {
     treatments::seed(&pool)
         .await
         .context("failed to seed treatments")?;
+
+    subscriptions::seed_plans(&pool)
+        .await
+        .context("failed to seed subscription plans")?;
 
     let password_hash = auth::hash_password(PASSWORD).context("failed to hash seed password")?;
 

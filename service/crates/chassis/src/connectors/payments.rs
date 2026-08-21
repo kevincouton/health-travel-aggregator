@@ -12,6 +12,15 @@ pub trait PaymentProvider: Send + Sync {
     ) -> Result<String, ApiError>;
 
     async fn refund_charge(&self, transaction_id: &str) -> Result<(), ApiError>;
+
+    async fn create_customer(&self, email: &str) -> Result<String, ApiError>;
+
+    async fn create_subscription(
+        &self,
+        customer_id: &str,
+        price_cents: u64,
+        interval: &str,
+    ) -> Result<String, ApiError>;
 }
 
 pub struct MockPaymentProvider {
@@ -57,5 +66,30 @@ impl PaymentProvider for MockPaymentProvider {
             .await
             .push(format!("refund {}", transaction_id));
         Ok(())
+    }
+
+    async fn create_customer(&self, email: &str) -> Result<String, ApiError> {
+        let id = self.counter.fetch_add(1, Ordering::SeqCst);
+        let customer_id = format!("cust-mock-{}", id);
+        self.calls
+            .lock()
+            .await
+            .push(format!("create_customer {}", email));
+        Ok(customer_id)
+    }
+
+    async fn create_subscription(
+        &self,
+        customer_id: &str,
+        price_cents: u64,
+        interval: &str,
+    ) -> Result<String, ApiError> {
+        let id = self.counter.fetch_add(1, Ordering::SeqCst);
+        let subscription_id = format!("sub-mock-{}", id);
+        self.calls.lock().await.push(format!(
+            "create_subscription customer {} price {} interval {}",
+            customer_id, price_cents, interval
+        ));
+        Ok(subscription_id)
     }
 }

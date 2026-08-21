@@ -71,6 +71,34 @@ async fn mock_payment_provider_records_charge_and_refund() {
 }
 
 #[tokio::test]
+async fn mock_payment_provider_records_customer_and_subscription() {
+    let provider = MockPaymentProvider::new();
+
+    let customer_id = provider
+        .create_customer("billing@example.com")
+        .await
+        .unwrap();
+    assert!(customer_id.starts_with("cust-mock-"));
+
+    let subscription_id = provider
+        .create_subscription(&customer_id, 9900, "month")
+        .await
+        .unwrap();
+    assert!(subscription_id.starts_with("sub-mock-"));
+
+    let calls = provider.calls.lock().await;
+    assert_eq!(calls.len(), 2);
+    assert_eq!(calls[0], "create_customer billing@example.com");
+    assert_eq!(
+        calls[1],
+        format!(
+            "create_subscription customer {} price 9900 interval month",
+            customer_id
+        )
+    );
+}
+
+#[tokio::test]
 async fn mock_maps_provider_records_geocode_and_distance() {
     let maps = MockMapsProvider::new();
 
