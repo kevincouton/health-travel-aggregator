@@ -1,6 +1,7 @@
 //! Chassis: the shared platform library for health-travel-aggregator.
 
 pub mod auth;
+pub mod claims;
 pub mod clinics;
 pub mod config;
 pub mod connectors;

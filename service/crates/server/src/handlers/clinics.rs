@@ -4,7 +4,7 @@ use axum::{
     Json,
 };
 use chassis::{
-    auth,
+    auth, claims,
     clinics::{self, ClinicStatus},
     error::ApiError,
     users::UserRole,
@@ -134,4 +134,34 @@ pub async fn list_public(
         page: query.page.max(1),
         per_page: query.per_page.clamp(1, 50),
     }))
+}
+
+#[derive(Deserialize)]
+pub struct ClaimClinicReq {
+    message: Option<String>,
+}
+
+/// Provider claim intent on an existing listing (e.g. a collector-ingested
+/// clinic owned by the system user). Resolves through admin moderation;
+/// approving the claim transfers ownership.
+pub async fn claim(
+    Path(slug): Path<String>,
+    CurrentUser(user): CurrentUser,
+    State(state): State<AppState>,
+    Json(req): Json<ClaimClinicReq>,
+) -> Result<Json<claims::ClinicClaim>, ApiError> {
+    auth::require_role(&user, UserRole::ProviderAdmin)?;
+    let clinic = clinics::by_slug(&state.pool, &slug)
+        .await?
+        .ok_or(ApiError::NotFound)?;
+    if clinic.owner_user_id == user.id {
+        return Err(ApiError::Conflict);
+    }
+    let message = req
+        .message
+        .as_deref()
+        .map(str::trim)
+        .filter(|m| !m.is_empty());
+    let claim = claims::create(&state.pool, clinic.id, user.id, message).await?;
+    Ok(Json(claim))
 }

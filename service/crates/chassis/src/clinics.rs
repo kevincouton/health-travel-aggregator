@@ -26,6 +26,12 @@ pub struct Clinic {
     pub description: Option<String>,
     pub status: ClinicStatus,
     pub created_at: DateTime<Utc>,
+    /// Collector that ingested this listing (NULL for provider-created).
+    pub source: Option<String>,
+    /// Per-source stable identifier for idempotent re-ingestion.
+    pub external_ref: Option<String>,
+    /// Moderator-supplied reason recorded when a listing is flagged.
+    pub flag_reason: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, Deserialize)]
@@ -40,7 +46,7 @@ pub struct ClinicFilters {
 }
 
 const SELECT_CLINIC: &str =
-    "SELECT id, owner_user_id, name, slug, country_code, city, accreditations, description, status, created_at FROM clinics";
+    "SELECT id, owner_user_id, name, slug, country_code, city, accreditations, description, status, created_at, source, external_ref, flag_reason FROM clinics";
 
 fn map_db_error(e: sqlx::Error) -> ApiError {
     match e {
@@ -63,7 +69,7 @@ pub async fn create(
     sqlx::query_as::<_, Clinic>(
         "INSERT INTO clinics (owner_user_id, name, slug, country_code, city, accreditations, description)
          VALUES ($1, $2, $3, $4, $5, $6, $7)
-         RETURNING id, owner_user_id, name, slug, country_code, city, accreditations, description, status, created_at",
+         RETURNING id, owner_user_id, name, slug, country_code, city, accreditations, description, status, created_at, source, external_ref, flag_reason",
     )
     .bind(owner_user_id)
     .bind(name)
@@ -93,7 +99,7 @@ pub async fn update(
         "UPDATE clinics
          SET name = $1, slug = $2, country_code = $3, city = $4, accreditations = $5, description = $6, updated_at = NOW()
          WHERE id = $7 AND owner_user_id = $8
-         RETURNING id, owner_user_id, name, slug, country_code, city, accreditations, description, status, created_at",
+         RETURNING id, owner_user_id, name, slug, country_code, city, accreditations, description, status, created_at, source, external_ref, flag_reason",
     )
     .bind(name)
     .bind(slug)
@@ -166,7 +172,7 @@ pub async fn list_public(
         .map_err(|_| ApiError::Internal)
 }
 
-const SEARCH_SELECT: &str = "SELECT DISTINCT c.id, c.owner_user_id, c.name, c.slug, c.country_code, c.city, c.accreditations, c.description, c.status, c.created_at FROM clinics c";
+const SEARCH_SELECT: &str = "SELECT DISTINCT c.id, c.owner_user_id, c.name, c.slug, c.country_code, c.city, c.accreditations, c.description, c.status, c.created_at, c.source, c.external_ref, c.flag_reason FROM clinics c";
 
 fn push_filters<'a>(
     builder: &mut QueryBuilder<'a, sqlx::Postgres>,
@@ -272,11 +278,28 @@ pub async fn update_status(
 ) -> Result<Option<Clinic>, ApiError> {
     sqlx::query_as::<_, Clinic>(
         "UPDATE clinics
-         SET status = $1, updated_at = NOW()
+         SET status = $1,
+             flag_reason = CASE WHEN $1 = 'approved' THEN NULL ELSE flag_reason END,
+             updated_at = NOW()
          WHERE id = $2
-         RETURNING id, owner_user_id, name, slug, country_code, city, accreditations, description, status, created_at",
+         RETURNING id, owner_user_id, name, slug, country_code, city, accreditations, description, status, created_at, source, external_ref, flag_reason",
     )
     .bind(status)
+    .bind(id)
+    .fetch_optional(pool)
+    .await
+    .map_err(map_db_error)
+}
+
+/// Flag a listing during moderation: suspends it and records the reason.
+pub async fn flag(pool: &DbPool, id: Uuid, reason: &str) -> Result<Option<Clinic>, ApiError> {
+    sqlx::query_as::<_, Clinic>(
+        "UPDATE clinics
+         SET status = 'suspended', flag_reason = $1, updated_at = NOW()
+         WHERE id = $2
+         RETURNING id, owner_user_id, name, slug, country_code, city, accreditations, description, status, created_at, source, external_ref, flag_reason",
+    )
+    .bind(reason)
     .bind(id)
     .fetch_optional(pool)
     .await

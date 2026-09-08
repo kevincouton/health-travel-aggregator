@@ -42,7 +42,10 @@ fn cors_layer(origin: &str) -> CorsLayer {
 pub fn app(state: AppState) -> Router {
     let admin_routes = Router::new()
         .route("/clinics", get(admin::list_clinics))
-        .route("/clinics/:id/status", patch(admin::update_clinic_status));
+        .route("/clinics/:id/status", patch(admin::update_clinic_status))
+        .route("/clinics/:id/flag", post(admin::flag_clinic))
+        .route("/claims", get(admin::list_claims))
+        .route("/claims/:id/status", patch(admin::resolve_claim));
 
     let auth_limiter = RateLimiter::new(
         state.cfg.rate_limit_auth_per_minute,
@@ -64,6 +67,7 @@ pub fn app(state: AppState) -> Router {
     let write_limited = Router::new()
         .route("/inquiries", post(inquiries::create))
         .route("/clinics/:slug/reviews", post(reviews::create))
+        .route("/clinics/:slug/claim", post(clinics::claim))
         .layer(middleware::from_fn(move |req: Request, next: Next| {
             rate_limit(req, next, write_limiter.clone())
         }));
