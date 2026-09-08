@@ -94,14 +94,6 @@
       <slot />
     </main>
 
-    <div class="max-w-6xl mx-auto px-4 mb-8">
-      <AdPlaceholder
-        slot-id="health-travel-aggregator-footer-leaderboard"
-        format="leaderboard"
-        label="Sponsored"
-      />
-    </div>
-
     <footer class="border-t bg-white mt-12 dark:border-gray-800 dark:bg-gray-900">
       <div class="max-w-6xl mx-auto px-4 py-6 text-sm text-gray-500 dark:text-gray-400">
         Health Travel — Built with Nuxt 4 &amp; Rust.

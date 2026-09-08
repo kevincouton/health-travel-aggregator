@@ -12,10 +12,10 @@ The Health Travel Aggregator connects patients with accredited clinics and treat
 ## Stack
 
 - **Backend:** Rust workspace (`service/`)
-  - `crates/chassis` — domain models, storage, and shared service logic (SQLite via `rusqlite`)
-  - `crates/server` — HTTP API server built with `topcoat`
+  - `crates/chassis` — domain models, storage (Postgres via `sqlx`), and shared service logic
+  - `crates/server` — HTTP API server built with `axum` + `tower-http`
 - **Frontend:** Nuxt 4 (`web/`) with Vue 3, Tailwind CSS, and Vite+
-- **Database:** SQLite
+- **Database:** PostgreSQL 15
 - **E2E Testing:** Playwright
 - **Deployment:** systemd + Caddy
 
@@ -25,11 +25,17 @@ The Health Travel Aggregator connects patients with accredited clinics and treat
 # 1. Clone / enter the repository
 cd /root/health-travel-aggregator
 
-# 2. Build and run the Rust API server
+# 2. Configure environment (Postgres creds, session key, CORS origin)
+cp .env.example .env
+
+# 3. Start Postgres (or point DATABASE_URL at your own instance)
+docker compose up -d postgres
+
+# 4. Build and run the Rust API server
 cd service
 cargo run --bin server
 
-# 3. In another terminal, install and run the web app
+# 5. In another terminal, install and run the web app
 cd web
 npm ci
 npm run dev
