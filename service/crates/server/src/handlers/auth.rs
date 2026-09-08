@@ -48,8 +48,12 @@ fn session_cookie(token: &str, app_url: &str) -> String {
     )
 }
 
-fn clear_session_cookie() -> String {
-    "session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0".to_string()
+fn clear_session_cookie(app_url: &str) -> String {
+    let secure = app_url.starts_with("https://");
+    format!(
+        "session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0{}",
+        if secure { "; Secure" } else { "" }
+    )
 }
 
 fn set_cookie_header(token: &str, app_url: &str) -> HeaderMap {
@@ -160,14 +164,24 @@ pub async fn verify_magic_link(
 }
 
 pub async fn logout(
+    State(state): State<AppState>,
     CurrentUser(_user): CurrentUser,
+    headers: HeaderMap,
 ) -> Result<(HeaderMap, Json<serde_json::Value>), ApiError> {
-    let mut headers = HeaderMap::new();
-    headers.insert(
+    if let Some(token) = headers
+        .get("cookie")
+        .and_then(|v| v.to_str().ok())
+        .and_then(|c| c.split(';').find(|s| s.trim().starts_with("session=")))
+        .and_then(|s| s.split_once('=').map(|(_, v)| v.trim().to_string()))
+    {
+        auth::delete_session(&state.pool, &token).await?;
+    }
+    let mut out = HeaderMap::new();
+    out.insert(
         "Set-Cookie",
-        HeaderValue::from_str(&clear_session_cookie()).unwrap(),
+        HeaderValue::from_str(&clear_session_cookie(&state.cfg.app_url)).unwrap(),
     );
-    Ok((headers, Json(serde_json::json!({ "ok": true }))))
+    Ok((out, Json(serde_json::json!({ "ok": true }))))
 }
 
 pub async fn me(CurrentUser(user): CurrentUser) -> Result<Json<users::User>, ApiError> {

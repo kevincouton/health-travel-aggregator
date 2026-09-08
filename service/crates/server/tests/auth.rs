@@ -13,6 +13,8 @@ fn test_config() -> Config {
         api_port: 8080,
         session_signing_key: "super-secret-key-at-least-32-bytes-long".into(),
         cors_origin: "".into(),
+        rate_limit_auth_per_minute: 100,
+        rate_limit_write_per_minute: 100,
     }
 }
 
@@ -31,7 +33,7 @@ fn session_cookie_value(headers: &axum::http::HeaderMap) -> Option<String> {
     headers
         .get_all("set-cookie")
         .iter()
-        .find(|v| v.to_str().ok().map_or(false, |s| s.starts_with("session=")))
+        .find(|v| v.to_str().ok().is_some_and(|s| s.starts_with("session=")))
         .and_then(|v| v.to_str().ok().map(|s| s.to_string()))
 }
 

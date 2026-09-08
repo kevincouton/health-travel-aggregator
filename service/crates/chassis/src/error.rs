@@ -13,6 +13,8 @@ pub enum ApiError {
     Validation(String),
     #[error("conflict")]
     Conflict,
+    #[error("rate limit exceeded")]
+    TooManyRequests,
     #[error("internal error")]
     Internal,
     #[error("bad request")]
@@ -27,6 +29,7 @@ impl IntoResponse for ApiError {
             ApiError::Forbidden => StatusCode::FORBIDDEN,
             ApiError::Validation(_) | ApiError::BadRequest => StatusCode::BAD_REQUEST,
             ApiError::Conflict => StatusCode::CONFLICT,
+            ApiError::TooManyRequests => StatusCode::TOO_MANY_REQUESTS,
             ApiError::Internal => StatusCode::INTERNAL_SERVER_ERROR,
         };
         (status, Json(json!({ "error": self.to_string() }))).into_response()

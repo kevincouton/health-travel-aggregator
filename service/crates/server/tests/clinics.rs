@@ -13,6 +13,8 @@ fn test_config() -> Config {
         api_port: 8080,
         session_signing_key: "super-secret-key-at-least-32-bytes-long".into(),
         cors_origin: "".into(),
+        rate_limit_auth_per_minute: 100,
+        rate_limit_write_per_minute: 100,
     }
 }
 
