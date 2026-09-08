@@ -1,10 +1,12 @@
+# All credentials come from the environment (see .env.example; docker compose
+# reads .env automatically). No secrets live in this file.
 services:
   postgres:
     image: postgres:15-alpine
     environment:
-      POSTGRES_USER: health_travel
-      POSTGRES_PASSWORD: health_travel
-      POSTGRES_DB: health_travel
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-health_travel}
     ports:
       - "5432:5432"
     volumes:
@@ -12,9 +14,11 @@ services:
   api:
     build: ./service
     environment:
-      DATABASE_URL: postgres://health_travel:health_travel@postgres:5432/health_travel
-      APP_URL: http://localhost:3000
-      SESSION_SIGNING_KEY: ${SESSION_SIGNING_KEY:-local-dev-key-min-32-bytes-long}
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-health_travel}
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      SESSION_SIGNING_KEY: ${SESSION_SIGNING_KEY:?set SESSION_SIGNING_KEY in .env (min 32 bytes)}
+      SENTRY_DSN: ${SENTRY_DSN:-}
     ports:
       - "8080:8080"
     depends_on:
@@ -24,8 +28,10 @@ services:
       context: ./web
       args:
         NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL:-http://localhost:8080}
+        NUXT_PUBLIC_SENTRY_DSN: ${NUXT_PUBLIC_SENTRY_DSN:-}
     environment:
       NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL:-http://localhost:8080}
+      NUXT_PUBLIC_SENTRY_DSN: ${NUXT_PUBLIC_SENTRY_DSN:-}
     ports:
       - "3000:3000"
     depends_on:
