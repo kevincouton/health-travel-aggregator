@@ -15,9 +15,7 @@ export default defineNuxtConfig({
       apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:8080',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://health-travel.lucanian.app',
       siteName: 'health-travel-aggregator',
-      adsEnabled: process.env.NUXT_PUBLIC_ADS_ENABLED || 'false',
-      adsProvider: process.env.NUXT_PUBLIC_ADS_PROVIDER || 'none',
-      adsenseClientId: process.env.NUXT_PUBLIC_ADSENSE_CLIENT_ID || '',
+      sentryDsn: process.env.NUXT_PUBLIC_SENTRY_DSN || '',
     },
   },
   nitro: {

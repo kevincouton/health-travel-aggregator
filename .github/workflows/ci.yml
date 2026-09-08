@@ -189,6 +189,32 @@ jobs:
           cargo crap -p chassis --lcov lcov.info --fail-above
           cargo crap -p chassis --lcov lcov.info --baseline crates/chassis/crap_baseline.json --fail-regression
 
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@cargo-audit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Audit service dependencies (warn-only, existing advisories)
+        working-directory: ./service
+        continue-on-error: true
+        run: |
+          [ -f Cargo.lock ] || cargo generate-lockfile
+          cargo audit
+      - name: Audit collectors dependencies (warn-only, existing advisories)
+        working-directory: ./collectors
+        continue-on-error: true
+        run: cargo audit
+      - name: Audit web dependencies (warn-only, existing advisories)
+        working-directory: ./web
+        continue-on-error: true
+        run: npm audit --audit-level=high
+
   deploy:
     needs: [service, web, crap-check, e2e]
     runs-on: ubuntu-latest

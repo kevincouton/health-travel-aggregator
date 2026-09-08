@@ -2,13 +2,49 @@ use chassis::{config::Config, db};
 use server::{router::app, state::AppState};
 use std::sync::Arc;
 
+/// Error tracking (GlitchTip, Sentry-compatible). Disabled cleanly when
+/// SENTRY_DSN is unset so dev/CI is unaffected; panic capture is on via the
+/// "panic" feature. The guard must outlive main so queued events flush.
+fn init_sentry() -> Option<sentry::ClientInitGuard> {
+    let dsn = std::env::var("SENTRY_DSN").unwrap_or_default();
+    if dsn.is_empty() {
+        return None;
+    }
+    // ClientOptions is #[non_exhaustive]: mutate defaults, no FRU.
+    let mut opts = sentry::ClientOptions::default();
+    opts.release = sentry::release_name!();
+    Some(sentry::init((dsn, opts)))
+}
+
+/// One-shot end-to-end verification hook: SENTRY_SELF_TEST=1 fires a single
+/// error-level message shortly after startup. Never set in production.
+fn start_sentry_self_test() {
+    if std::env::var("SENTRY_SELF_TEST").as_deref() == Ok("1") {
+        tokio::spawn(async {
+            tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+            sentry::capture_message("sentry wiring self-test", sentry::Level::Error);
+        });
+    }
+}
+
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::fmt::init();
+    let _sentry_guard = init_sentry();
+    // fmt layer (INFO default) plus the sentry layer, which captures
+    // error-level events as Sentry errors and lower levels as breadcrumbs.
+    // No-op when the client is disabled.
+    use tracing_subscriber::prelude::*;
+    tracing_subscriber::registry()
+        .with(tracing_subscriber::filter::LevelFilter::INFO)
+        .with(tracing_subscriber::fmt::layer())
+        .with(sentry_tracing::layer())
+        .init();
 
     let cfg = Config::from_env();
     let pool = db::connect(&cfg.database_url).await?;
     db::migrate(&pool).await?;
+
+    start_sentry_self_test();
 
     let email: Arc<dyn chassis::connectors::email::EmailSender + Send + Sync> =
         Arc::new(chassis::connectors::email::MockEmailSender::new());
