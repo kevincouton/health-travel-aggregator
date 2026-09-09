@@ -1,6 +1,11 @@
 use axum::body::Body;
 use chassis::{
-    auth, config::Config, connectors::{email::MockEmailSender, payments::MockPaymentProvider}, db::DbPool, users, users::UserRole,
+    auth,
+    config::Config,
+    connectors::{email::MockEmailSender, payments::MockPaymentProvider},
+    db::DbPool,
+    users,
+    users::UserRole,
 };
 use server::{router::app, state::AppState};
 use std::sync::Arc;

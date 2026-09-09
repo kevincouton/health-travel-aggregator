@@ -113,10 +113,7 @@ pub async fn get_active_for_user(
     .map_err(|_| ApiError::Internal)
 }
 
-pub async fn plan_by_slug(
-    pool: &DbPool,
-    slug: &str,
-) -> Result<Option<SubscriptionPlan>, ApiError> {
+pub async fn plan_by_slug(pool: &DbPool, slug: &str) -> Result<Option<SubscriptionPlan>, ApiError> {
     sqlx::query_as::<_, SubscriptionPlan>(
         "SELECT * FROM subscription_plans WHERE slug = $1 AND is_active = true LIMIT 1",
     )
@@ -131,13 +128,11 @@ pub async fn plan_by_slug(
 pub async fn current_plan(pool: &DbPool, user_id: Uuid) -> Result<SubscriptionPlan, ApiError> {
     match get_active_for_user(pool, user_id).await? {
         Some(sub) => {
-            sqlx::query_as::<_, SubscriptionPlan>(
-                "SELECT * FROM subscription_plans WHERE id = $1",
-            )
-            .bind(sub.plan_id)
-            .fetch_one(pool)
-            .await
-            .map_err(|_| ApiError::Internal)
+            sqlx::query_as::<_, SubscriptionPlan>("SELECT * FROM subscription_plans WHERE id = $1")
+                .bind(sub.plan_id)
+                .fetch_one(pool)
+                .await
+                .map_err(|_| ApiError::Internal)
         }
         None => default_plan(pool).await,
     }
@@ -251,8 +246,8 @@ pub async fn sync_from_stripe(
     let Some(status) = map_stripe_status(status) else {
         return Ok(());
     };
-    let period_end: Option<DateTime<Utc>> = current_period_end
-        .and_then(|ts| DateTime::from_timestamp(ts, 0));
+    let period_end: Option<DateTime<Utc>> =
+        current_period_end.and_then(|ts| DateTime::from_timestamp(ts, 0));
     sqlx::query(
         "UPDATE subscriptions
          SET status = $2,

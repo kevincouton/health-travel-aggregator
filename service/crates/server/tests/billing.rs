@@ -76,7 +76,11 @@ async fn provider_session(pool: &DbPool, email: &str) -> (Uuid, String) {
     (user.id, session)
 }
 
-fn post_json(uri: &str, session: Option<&str>, body: serde_json::Value) -> axum::http::Request<Body> {
+fn post_json(
+    uri: &str,
+    session: Option<&str>,
+    body: serde_json::Value,
+) -> axum::http::Request<Body> {
     let mut builder = axum::http::Request::builder()
         .method("POST")
         .uri(uri)
@@ -102,7 +106,10 @@ fn stripe_signature(payload: &[u8], secret: &str, t: i64) -> String {
     format!("t={t},v1={}", hex::encode(mac.finalize().into_bytes()))
 }
 
-fn webhook_request(payload: serde_json::Value, signature: Option<String>) -> axum::http::Request<Body> {
+fn webhook_request(
+    payload: serde_json::Value,
+    signature: Option<String>,
+) -> axum::http::Request<Body> {
     let mut builder = axum::http::Request::builder()
         .method("POST")
         .uri("/webhooks/stripe")
@@ -233,13 +240,11 @@ async fn webhook_checkout_completed_activates_pro_subscription(pool: DbPool) {
         .unwrap()
         .expect("active subscription");
     assert_eq!(sub.status, SubscriptionStatus::Active);
-    let plan = sqlx::query_scalar::<_, String>(
-        "SELECT slug FROM subscription_plans WHERE id = $1",
-    )
-    .bind(sub.plan_id)
-    .fetch_one(&pool)
-    .await
-    .unwrap();
+    let plan = sqlx::query_scalar::<_, String>("SELECT slug FROM subscription_plans WHERE id = $1")
+        .bind(sub.plan_id)
+        .fetch_one(&pool)
+        .await
+        .unwrap();
     assert_eq!(plan, "pro");
 }
 
@@ -261,7 +266,11 @@ async fn webhook_rejects_tampered_and_expired_signatures(pool: DbPool) {
 
     // Signature over a different payload (tampering).
     let other = serde_json::json!({"id": "evt_other"}).to_string();
-    let sig = stripe_signature(other.as_bytes(), WEBHOOK_SECRET, chrono::Utc::now().timestamp());
+    let sig = stripe_signature(
+        other.as_bytes(),
+        WEBHOOK_SECRET,
+        chrono::Utc::now().timestamp(),
+    );
     let resp = router
         .clone()
         .oneshot(webhook_request(payload.clone(), Some(sig)))
@@ -336,10 +345,7 @@ async fn webhook_subscription_updated_and_deleted_sync_status(pool: DbPool) {
         .unwrap()
         .expect("past_due is still active");
     assert_eq!(sub.status, SubscriptionStatus::PastDue);
-    assert_eq!(
-        sub.current_period_end.timestamp(),
-        1_800_000_000
-    );
+    assert_eq!(sub.current_period_end.timestamp(), 1_800_000_000);
 
     let deleted = serde_json::json!({
         "id": "evt_3",
@@ -395,13 +401,21 @@ async fn basic_plan_allows_one_clinic_then_rejects_with_402(pool: DbPool) {
 
     let resp = router
         .clone()
-        .oneshot(post_json("/me/clinics", Some(&session), clinic_body("clinic-one")))
+        .oneshot(post_json(
+            "/me/clinics",
+            Some(&session),
+            clinic_body("clinic-one"),
+        ))
         .await
         .unwrap();
     assert_eq!(resp.status(), 200);
 
     let resp = router
-        .oneshot(post_json("/me/clinics", Some(&session), clinic_body("clinic-two")))
+        .oneshot(post_json(
+            "/me/clinics",
+            Some(&session),
+            clinic_body("clinic-two"),
+        ))
         .await
         .unwrap();
     assert_eq!(resp.status(), 402);
@@ -438,7 +452,11 @@ async fn basic_plan_allows_three_packages_then_rejects_with_402(pool: DbPool) {
 
     let resp = router
         .clone()
-        .oneshot(post_json("/me/clinics", Some(&session), clinic_body("pkg-clinic")))
+        .oneshot(post_json(
+            "/me/clinics",
+            Some(&session),
+            clinic_body("pkg-clinic"),
+        ))
         .await
         .unwrap();
     assert_eq!(resp.status(), 200);

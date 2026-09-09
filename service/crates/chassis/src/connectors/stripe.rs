@@ -29,14 +29,17 @@ pub struct StripeConfig {
 impl StripeConfig {
     /// `None` when `STRIPE_SECRET_KEY` is unset/empty (mock mode).
     pub fn from_env() -> Option<Self> {
-        let secret_key =
-            std::env::var("STRIPE_SECRET_KEY").ok().filter(|k| !k.is_empty())?;
+        let secret_key = std::env::var("STRIPE_SECRET_KEY")
+            .ok()
+            .filter(|k| !k.is_empty())?;
         Some(Self {
             secret_key,
             webhook_secret: std::env::var("STRIPE_WEBHOOK_SECRET")
                 .ok()
                 .filter(|v| !v.is_empty()),
-            price_pro: std::env::var("STRIPE_PRICE_PRO").ok().filter(|v| !v.is_empty()),
+            price_pro: std::env::var("STRIPE_PRICE_PRO")
+                .ok()
+                .filter(|v| !v.is_empty()),
             price_enterprise: std::env::var("STRIPE_PRICE_ENTERPRISE")
                 .ok()
                 .filter(|v| !v.is_empty()),
@@ -105,7 +108,11 @@ impl StripePaymentProvider {
         })
     }
 
-    async fn post_form(&self, path: &str, form: &[(&str, String)]) -> Result<StripeObject, ApiError> {
+    async fn post_form(
+        &self,
+        path: &str,
+        form: &[(&str, String)],
+    ) -> Result<StripeObject, ApiError> {
         let resp = self
             .http
             .post(format!("{}{}", self.base_url, path))
@@ -288,8 +295,8 @@ pub fn verify_webhook_signature_at(
         return Err(ApiError::Unauthorized);
     }
 
-    let mut mac = Hmac::<Sha256>::new_from_slice(secret.as_bytes())
-        .map_err(|_| ApiError::Internal)?;
+    let mut mac =
+        Hmac::<Sha256>::new_from_slice(secret.as_bytes()).map_err(|_| ApiError::Internal)?;
     mac.update(t.to_string().as_bytes());
     mac.update(b".");
     mac.update(payload);
@@ -383,8 +390,14 @@ mod tests {
         assert_eq!(stripe.price_id_for("pro"), Some("price_pro"));
         assert_eq!(stripe.price_id_for("enterprise"), Some("price_ent"));
         assert_eq!(stripe.price_id_for("basic"), None);
-        assert_eq!(stripe.price_id_for_amount(9900, "month").unwrap(), "price_pro");
-        assert_eq!(stripe.price_id_for_amount(29900, "month").unwrap(), "price_ent");
+        assert_eq!(
+            stripe.price_id_for_amount(9900, "month").unwrap(),
+            "price_pro"
+        );
+        assert_eq!(
+            stripe.price_id_for_amount(29900, "month").unwrap(),
+            "price_ent"
+        );
         assert!(stripe.price_id_for_amount(100, "month").is_err());
     }
 }

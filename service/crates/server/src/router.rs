@@ -1,5 +1,7 @@
 use crate::{
-    handlers::{admin, auth, clinics, inquiries, packages, reviews, subscriptions, treatments, webhooks},
+    handlers::{
+        admin, auth, clinics, inquiries, packages, reviews, subscriptions, treatments, webhooks,
+    },
     middleware::{origin_guard, rate_limit, RateLimiter},
     state::AppState,
 };
@@ -92,10 +94,7 @@ pub fn app(state: AppState) -> Router {
         .route("/webhooks/stripe", post(webhooks::stripe))
         .route("/auth/logout", post(auth::logout))
         .route("/auth/me", get(auth::me))
-        .route(
-            "/me/subscription",
-            get(subscriptions::current),
-        )
+        .route("/me/subscription", get(subscriptions::current))
         .route("/me/subscription/checkout", post(subscriptions::checkout))
         .route(
             "/me/clinics",

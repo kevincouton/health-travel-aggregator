@@ -102,7 +102,11 @@ impl SmtpConfig {
             "starttls" => SmtpTls::StartTls,
             "tls" => SmtpTls::Tls,
             "off" => SmtpTls::Off,
-            other => return Some(Err(format!("SMTP_TLS must be starttls/tls/off, got {other:?}"))),
+            other => {
+                return Some(Err(format!(
+                    "SMTP_TLS must be starttls/tls/off, got {other:?}"
+                )))
+            }
         };
         let default_port = match tls {
             SmtpTls::Tls => 465,
@@ -139,9 +143,9 @@ impl SmtpConfig {
             SmtpTls::StartTls => Tls::Required(
                 TlsParameters::new(self.host.clone()).map_err(|_| ApiError::Internal)?,
             ),
-            SmtpTls::Tls => Tls::Wrapper(
-                TlsParameters::new(self.host.clone()).map_err(|_| ApiError::Internal)?,
-            ),
+            SmtpTls::Tls => {
+                Tls::Wrapper(TlsParameters::new(self.host.clone()).map_err(|_| ApiError::Internal)?)
+            }
             SmtpTls::Off => Tls::None,
         };
         // `builder_dangerous` is only "dangerous" in that it does not impose
@@ -150,9 +154,7 @@ impl SmtpConfig {
             .port(self.port)
             .tls(tls);
         let builder = match (&self.username, &self.password) {
-            (Some(u), Some(p)) => {
-                builder.credentials(Credentials::new(u.clone(), p.clone()))
-            }
+            (Some(u), Some(p)) => builder.credentials(Credentials::new(u.clone(), p.clone())),
             _ => builder,
         };
         Ok(builder)
@@ -195,7 +197,9 @@ impl SmtpEmailSender {
     }
 
     fn magic_link_message(&self, to: &str, link: &str) -> Result<Message, ApiError> {
-        let to: Mailbox = to.parse().map_err(|_| ApiError::Validation(format!("invalid recipient address: {to:?}")))?;
+        let to: Mailbox = to
+            .parse()
+            .map_err(|_| ApiError::Validation(format!("invalid recipient address: {to:?}")))?;
         Message::builder()
             .from(self.from.clone())
             .to(to)
@@ -213,7 +217,9 @@ impl SmtpEmailSender {
         clinic_name: &str,
         patient_email: &str,
     ) -> Result<Message, ApiError> {
-        let to: Mailbox = to.parse().map_err(|_| ApiError::Validation(format!("invalid recipient address: {to:?}")))?;
+        let to: Mailbox = to
+            .parse()
+            .map_err(|_| ApiError::Validation(format!("invalid recipient address: {to:?}")))?;
         Message::builder()
             .from(self.from.clone())
             .to(to)
@@ -229,7 +235,9 @@ impl SmtpEmailSender {
 #[async_trait]
 impl EmailSender for SmtpEmailSender {
     async fn send_magic_link(&self, to: &str, link: &str) -> Result<(), ApiError> {
-        self.mailer.deliver(self.magic_link_message(to, link)?).await
+        self.mailer
+            .deliver(self.magic_link_message(to, link)?)
+            .await
     }
 
     async fn send_inquiry_notification(
@@ -327,7 +335,11 @@ mod tests {
     fn inquiry_notification_message_mentions_clinic_and_patient() {
         let sender = test_sender();
         let msg = sender
-            .inquiry_notification_message("clinic@example.com", "Acme Clinic", "patient@example.com")
+            .inquiry_notification_message(
+                "clinic@example.com",
+                "Acme Clinic",
+                "patient@example.com",
+            )
             .unwrap();
         let (headers, body) = decoded(&msg);
         assert!(
@@ -358,7 +370,10 @@ mod tests {
             from: "no-reply@example.com".parse().unwrap(),
         };
         sender
-            .send_magic_link("p@example.com", "https://app.example.com/auth/verify?token=tok")
+            .send_magic_link(
+                "p@example.com",
+                "https://app.example.com/auth/verify?token=tok",
+            )
             .await
             .unwrap();
         sender
