@@ -22,7 +22,7 @@ test.describe('Mobile navigation', () => {
     await page.goto('/')
     await page.locator('button[aria-label="Toggle navigation menu"]').first().click()
     const mobileMenu = page.locator('#mobile-menu').first()
-    await expect(mobileMenu.getByRole('link', { name: 'Entities' }).first()).toBeVisible()
+    await expect(mobileMenu.getByRole('link', { name: 'Clinics' }).first()).toBeVisible()
     await expect(mobileMenu.getByRole('link', { name: 'About' }).first()).toBeVisible()
   })
 })
