@@ -4,4 +4,6 @@ pub mod clinics;
 pub mod inquiries;
 pub mod packages;
 pub mod reviews;
+pub mod subscriptions;
 pub mod treatments;
+pub mod webhooks;

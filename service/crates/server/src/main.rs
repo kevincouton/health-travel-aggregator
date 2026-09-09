@@ -1,6 +1,5 @@
 use chassis::{config::Config, db};
 use server::{router::app, state::AppState};
-use std::sync::Arc;
 
 /// Error tracking (GlitchTip, Sentry-compatible). Disabled cleanly when
 /// SENTRY_DSN is unset so dev/CI is unaffected; panic capture is on via the
@@ -43,13 +42,24 @@ async fn main() -> anyhow::Result<()> {
     let cfg = Config::from_env();
     let pool = db::connect(&cfg.database_url).await?;
     db::migrate(&pool).await?;
+    // Idempotent; guarantees the Basic/Pro/Enterprise catalog exists for
+    // plan-limit enforcement and checkout.
+    chassis::subscriptions::seed_plans(&pool).await?;
 
     start_sentry_self_test();
 
-    let email: Arc<dyn chassis::connectors::email::EmailSender + Send + Sync> =
-        Arc::new(chassis::connectors::email::MockEmailSender::new());
+    // Connector selection: real SMTP/Stripe when their env keys are set,
+    // mocks otherwise so dev/CI run with no external dependencies.
+    let email = chassis::connectors::email::sender_from_env();
+    let (payments, stripe) = chassis::connectors::stripe::provider_from_env();
 
-    let state = AppState { cfg, pool, email };
+    let state = AppState {
+        cfg,
+        pool,
+        email,
+        payments,
+        stripe,
+    };
 
     let listener = tokio::net::TcpListener::bind(("0.0.0.0", state.cfg.api_port)).await?;
     tracing::info!("server listening on {}", state.cfg.api_port);

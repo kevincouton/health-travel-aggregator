@@ -13,6 +13,8 @@ pub enum ApiError {
     Validation(String),
     #[error("conflict")]
     Conflict,
+    #[error("payment required: {0}")]
+    PaymentRequired(String),
     #[error("rate limit exceeded")]
     TooManyRequests,
     #[error("internal error")]
@@ -29,6 +31,7 @@ impl IntoResponse for ApiError {
             ApiError::Forbidden => StatusCode::FORBIDDEN,
             ApiError::Validation(_) | ApiError::BadRequest => StatusCode::BAD_REQUEST,
             ApiError::Conflict => StatusCode::CONFLICT,
+            ApiError::PaymentRequired(_) => StatusCode::PAYMENT_REQUIRED,
             ApiError::TooManyRequests => StatusCode::TOO_MANY_REQUESTS,
             ApiError::Internal => StatusCode::INTERNAL_SERVER_ERROR,
         };

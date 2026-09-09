@@ -1,5 +1,5 @@
 use crate::{
-    handlers::{admin, auth, clinics, inquiries, packages, reviews, treatments},
+    handlers::{admin, auth, clinics, inquiries, packages, reviews, subscriptions, treatments, webhooks},
     middleware::{origin_guard, rate_limit, RateLimiter},
     state::AppState,
 };
@@ -87,8 +87,16 @@ pub fn app(state: AppState) -> Router {
 
     Router::new()
         .route("/healthz", get(|| async { "ok" }))
+        // Stripe calls this server-to-server without an Origin header; the
+        // origin guard passes it through and the signature check authenticates.
+        .route("/webhooks/stripe", post(webhooks::stripe))
         .route("/auth/logout", post(auth::logout))
         .route("/auth/me", get(auth::me))
+        .route(
+            "/me/subscription",
+            get(subscriptions::current),
+        )
+        .route("/me/subscription/checkout", post(subscriptions::checkout))
         .route(
             "/me/clinics",
             post(clinics::create).get(clinics::list_for_owner),

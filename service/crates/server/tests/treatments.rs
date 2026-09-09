@@ -1,5 +1,9 @@
 use axum::body::Body;
-use chassis::{config::Config, connectors::email::MockEmailSender, db::DbPool};
+use chassis::{
+    config::Config,
+    connectors::{email::MockEmailSender, payments::MockPaymentProvider},
+    db::DbPool,
+};
 use server::{router::app, state::AppState};
 use std::sync::Arc;
 use tower::ServiceExt;
@@ -24,6 +28,8 @@ async fn setup_state(pool: DbPool) -> (AppState, Arc<MockEmailSender>) {
         cfg: test_config(),
         pool,
         email: email.clone(),
+        payments: Arc::new(MockPaymentProvider::new()),
+        stripe: None,
     };
     (state, email)
 }

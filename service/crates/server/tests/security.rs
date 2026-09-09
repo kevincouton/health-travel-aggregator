@@ -1,6 +1,6 @@
 use axum::body::Body;
 use chassis::config::Config;
-use chassis::connectors::email::MockEmailSender;
+use chassis::connectors::{email::MockEmailSender, payments::MockPaymentProvider};
 use chassis::db::DbPool;
 use server::{router::app, state::AppState};
 use std::sync::Arc;
@@ -23,6 +23,8 @@ fn state_with(pool: DbPool, cfg: Config) -> AppState {
         cfg,
         pool,
         email: Arc::new(MockEmailSender::new()),
+        payments: Arc::new(MockPaymentProvider::new()),
+        stripe: None,
     }
 }
 

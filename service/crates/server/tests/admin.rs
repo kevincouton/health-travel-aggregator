@@ -1,6 +1,6 @@
 use axum::body::Body;
 use chassis::{
-    auth, clinics, config::Config, connectors::email::MockEmailSender, db::DbPool, users,
+    auth, clinics, config::Config, connectors::{email::MockEmailSender, payments::MockPaymentProvider}, db::DbPool, users,
     users::UserRole,
 };
 use server::{router::app, state::AppState};
@@ -26,6 +26,8 @@ async fn setup_state(pool: DbPool) -> (AppState, Arc<MockEmailSender>) {
         cfg: test_config(),
         pool,
         email: email.clone(),
+        payments: Arc::new(MockPaymentProvider::new()),
+        stripe: None,
     };
     (state, email)
 }
