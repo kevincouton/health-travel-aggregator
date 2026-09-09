@@ -13,14 +13,14 @@ test.describe('Homepage', () => {
     await expect(headerLink).not.toHaveText('')
   })
 
-  test('Entities link is visible', async ({ page }) => {
+  test('Clinics link is visible', async ({ page }) => {
     await page.goto('/')
     const menuButton = page.locator('button[aria-label="Toggle navigation menu"]').first()
     if (await menuButton.isVisible()) {
       await menuButton.click()
-      await expect(page.locator('#mobile-menu').getByRole('link', { name: 'Entities' }).first()).toBeVisible()
+      await expect(page.locator('#mobile-menu').getByRole('link', { name: 'Clinics' }).first()).toBeVisible()
     } else {
-      await expect(page.getByRole('link', { name: 'Entities' }).first()).toBeVisible()
+      await expect(page.getByRole('link', { name: 'Clinics' }).first()).toBeVisible()
     }
   })
 
