@@ -14,7 +14,7 @@ The Health Travel Aggregator connects patients with accredited clinics and treat
 - **Backend:** Rust workspace (`service/`)
   - `crates/chassis` — domain models, storage (Postgres via `sqlx`), and shared service logic
   - `crates/server` — HTTP API server built with `axum` + `tower-http`
-- **Frontend:** Nuxt 4 (`web/`) with Vue 3, Tailwind CSS, and Vite+
+- **Frontend:** Nuxt 4 (`web/`) with Vue 3, Tailwind CSS, and Vite+ — installable as a PWA (web app manifest + service worker; public pages work offline, authenticated surfaces stay network-only)
 - **Database:** PostgreSQL 15
 - **E2E Testing:** Playwright
 - **Deployment:** systemd + Caddy
