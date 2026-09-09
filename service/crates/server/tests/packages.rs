@@ -1,6 +1,10 @@
 use axum::body::Body;
 use chassis::{
-    auth, config::Config, connectors::{email::MockEmailSender, payments::MockPaymentProvider}, db::DbPool, treatments, users,
+    auth,
+    config::Config,
+    connectors::{email::MockEmailSender, payments::MockPaymentProvider},
+    db::DbPool,
+    treatments, users,
     users::UserRole,
 };
 use server::{router::app, state::AppState};

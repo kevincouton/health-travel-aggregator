@@ -1,8 +1,6 @@
 use chassis::{
     config::Config,
-    connectors::{
-        email::EmailSender, payments::PaymentProvider, stripe::StripePaymentProvider,
-    },
+    connectors::{email::EmailSender, payments::PaymentProvider, stripe::StripePaymentProvider},
     db::DbPool,
 };
 use std::sync::Arc;

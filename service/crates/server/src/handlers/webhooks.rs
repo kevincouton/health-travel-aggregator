@@ -32,9 +32,9 @@ pub async fn stripe(
         .stripe
         .as_ref()
         .ok_or(ApiError::Validation("stripe is not configured".into()))?;
-    let secret = provider
-        .webhook_secret()
-        .ok_or(ApiError::Validation("stripe webhook secret is not configured".into()))?;
+    let secret = provider.webhook_secret().ok_or(ApiError::Validation(
+        "stripe webhook secret is not configured".into(),
+    ))?;
     let signature = headers
         .get("stripe-signature")
         .and_then(|v| v.to_str().ok())
@@ -53,15 +53,21 @@ pub async fn stripe(
                 .and_then(|v| v.as_str())
                 .or_else(|| obj.get("client_reference_id").and_then(|v| v.as_str()))
                 .and_then(|s| s.parse().ok())
-                .ok_or(ApiError::Validation("checkout session has no user reference".into()))?;
+                .ok_or(ApiError::Validation(
+                    "checkout session has no user reference".into(),
+                ))?;
             let plan_slug = obj
                 .pointer("/metadata/plan_slug")
                 .and_then(|v| v.as_str())
-                .ok_or(ApiError::Validation("checkout session has no plan reference".into()))?;
-            let stripe_subscription_id = obj
-                .get("subscription")
-                .and_then(|v| v.as_str())
-                .ok_or(ApiError::Validation("checkout session has no subscription".into()))?;
+                .ok_or(ApiError::Validation(
+                    "checkout session has no plan reference".into(),
+                ))?;
+            let stripe_subscription_id =
+                obj.get("subscription")
+                    .and_then(|v| v.as_str())
+                    .ok_or(ApiError::Validation(
+                        "checkout session has no subscription".into(),
+                    ))?;
             subscriptions::activate_from_checkout(
                 &state.pool,
                 user_id,

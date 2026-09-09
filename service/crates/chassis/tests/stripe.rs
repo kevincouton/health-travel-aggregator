@@ -28,7 +28,10 @@ async fn create_customer_posts_email_with_bearer_auth() {
     );
     let provider = test_provider(&server);
 
-    let id = provider.create_customer("billing@example.com").await.unwrap();
+    let id = provider
+        .create_customer("billing@example.com")
+        .await
+        .unwrap();
     assert_eq!(id, "cus_123");
 }
 
@@ -102,17 +105,13 @@ async fn create_subscription_without_configured_price_fails_before_http() {
         price_pro: None,
         price_enterprise: None,
     };
-    let provider =
-        StripePaymentProvider::with_base_url(cfg, &format!("http://{}", server.addr()));
+    let provider = StripePaymentProvider::with_base_url(cfg, &format!("http://{}", server.addr()));
 
     let err = provider
         .create_subscription("cus_123", 9900, "month")
         .await
         .unwrap_err();
-    assert!(matches!(
-        err,
-        chassis::error::ApiError::Validation(_)
-    ));
+    assert!(matches!(err, chassis::error::ApiError::Validation(_)));
 }
 
 #[tokio::test]
@@ -136,10 +135,7 @@ async fn create_checkout_session_posts_subscription_mode_and_metadata() {
                     "https://app.example.com/dashboard/billing?status=cancel"
                 )),
                 contains(("metadata[plan_slug]", "pro")),
-                contains((
-                    "metadata[user_id]",
-                    "018e2f2a-0000-7000-8000-000000000001"
-                )),
+                contains(("metadata[user_id]", "018e2f2a-0000-7000-8000-000000000001")),
                 contains((
                     "client_reference_id",
                     "018e2f2a-0000-7000-8000-000000000001"
@@ -159,7 +155,10 @@ async fn create_checkout_session_posts_subscription_mode_and_metadata() {
             "https://app.example.com/dashboard/billing?status=success",
             "https://app.example.com/dashboard/billing?status=cancel",
             &[
-                ("user_id".into(), "018e2f2a-0000-7000-8000-000000000001".into()),
+                (
+                    "user_id".into(),
+                    "018e2f2a-0000-7000-8000-000000000001".into(),
+                ),
                 ("plan_slug".into(), "pro".into()),
             ],
         )
@@ -177,6 +176,9 @@ async fn stripe_error_status_becomes_an_api_error() {
     );
     let provider = test_provider(&server);
 
-    let err = provider.create_customer("billing@example.com").await.unwrap_err();
+    let err = provider
+        .create_customer("billing@example.com")
+        .await
+        .unwrap_err();
     assert!(matches!(err, chassis::error::ApiError::Internal));
 }
