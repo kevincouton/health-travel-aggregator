@@ -62,9 +62,20 @@ cd service && cargo fmt --check && cargo clippy -- -D warnings && cargo test
 # Web checks
 cd web && npm run check && npm run test
 
-# E2E tests (requires Chromium browser)
+# E2E tests (requires Chromium browser, a seeded API on :8080, and the web
+# preview on :3000 — see the e2e job in .github/workflows/ci.yml)
 cd web && npx playwright install chromium && npm run test:e2e
 ```
+
+### Browser → API origin requirements
+
+The API enforces a CSRF origin guard and a restrictive CORS allowlist. When the
+frontend and API run on different origins (e.g. Nuxt dev/preview on
+`http://localhost:3000` and the API on `http://localhost:8080`), the API must
+be started with `CORS_ORIGIN=http://localhost:3000` (and `APP_URL` must match
+the frontend origin — its default already is `http://localhost:3000`).
+Authenticated requests use the `session` cookie; the web app always calls the
+API with `credentials: 'include'`.
 
 ## CI
 
