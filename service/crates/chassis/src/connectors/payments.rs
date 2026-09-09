@@ -21,6 +21,18 @@ pub trait PaymentProvider: Send + Sync {
         price_cents: u64,
         interval: &str,
     ) -> Result<String, ApiError>;
+
+    /// Hosted checkout for a subscription plan. Returns the URL to redirect
+    /// the user to. `metadata` is attached to the session and echoed back in
+    /// webhook events (used to link the checkout to a user and plan).
+    async fn create_checkout_session(
+        &self,
+        customer_id: &str,
+        price_id: &str,
+        success_url: &str,
+        cancel_url: &str,
+        metadata: &[(String, String)],
+    ) -> Result<String, ApiError>;
 }
 
 pub struct MockPaymentProvider {
@@ -91,5 +103,21 @@ impl PaymentProvider for MockPaymentProvider {
             customer_id, price_cents, interval
         ));
         Ok(subscription_id)
+    }
+
+    async fn create_checkout_session(
+        &self,
+        customer_id: &str,
+        price_id: &str,
+        success_url: &str,
+        cancel_url: &str,
+        metadata: &[(String, String)],
+    ) -> Result<String, ApiError> {
+        let id = self.counter.fetch_add(1, Ordering::SeqCst);
+        self.calls.lock().await.push(format!(
+            "create_checkout_session customer {} price {} success {} cancel {} metadata {:?}",
+            customer_id, price_id, success_url, cancel_url, metadata
+        ));
+        Ok(format!("https://mock-checkout.example/session-{}", id))
     }
 }
