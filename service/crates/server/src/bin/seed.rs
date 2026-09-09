@@ -16,6 +16,7 @@ use uuid::Uuid;
 
 const PROVIDER_EMAIL: &str = "provider@example.com";
 const ADMIN_EMAIL: &str = "admin@example.com";
+const PATIENT_EMAIL: &str = "patient@example.com";
 const PASSWORD: &str = "Password123!";
 const CLINIC_SLUG: &str = "istanbul-smile-clinic";
 
@@ -83,6 +84,25 @@ async fn main() -> anyhow::Result<()> {
     .await
     .context("failed to upsert admin user")?
     .0;
+
+    // Upsert the patient user used by the e2e patient flows. The password
+    // login handler accepts any account with a password hash, so patients can
+    // sign in with it in tests even though production patients use magic links.
+    query_as::<_, (Uuid,)>(
+        "INSERT INTO users (email, role, password_hash, email_verified_at)
+         VALUES ($1, $2, $3, NOW())
+         ON CONFLICT (email) DO UPDATE SET
+           role = EXCLUDED.role,
+           password_hash = EXCLUDED.password_hash,
+           email_verified_at = COALESCE(users.email_verified_at, NOW())
+         RETURNING id",
+    )
+    .bind(PATIENT_EMAIL)
+    .bind(UserRole::Patient)
+    .bind(&password_hash)
+    .fetch_one(&pool)
+    .await
+    .context("failed to upsert patient user")?;
 
     // Upsert the approved demo clinic owned by the provider.
     let clinic_id: Uuid = query_as::<_, (Uuid,)>(
