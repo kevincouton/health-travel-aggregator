@@ -97,6 +97,7 @@ const props = defineProps({
   packageId: { type: String, default: null },
   clinicName: { type: String, default: '' },
   packageName: { type: String, default: '' },
+  initialEmail: { type: String, default: '' },
 })
 
 const emit = defineEmits(['success'])
@@ -104,7 +105,7 @@ const emit = defineEmits(['success'])
 const { createInquiry } = useInquiries()
 
 const form = reactive({
-  contact_email: '',
+  contact_email: props.initialEmail,
   preferred_dates: '',
   medical_notes: '',
 })

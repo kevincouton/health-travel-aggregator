@@ -50,6 +50,8 @@
             </NuxtLink>
           </nav>
 
+          <UserMenu />
+
           <ThemeToggle />
 
           <MobileNav>
@@ -85,6 +87,26 @@
             >
               About
             </NuxtLink>
+            <ClientOnly>
+              <NuxtLink
+                v-if="authUser"
+                :to="authHomePath"
+                class="px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+                active-class="font-medium text-gray-900 bg-gray-50 dark:text-gray-100 dark:bg-gray-800"
+                @click="$event.target.closest('#mobile-menu')?.querySelector('button')?.click?.()"
+              >
+                {{ authHomeLabel }}
+              </NuxtLink>
+              <NuxtLink
+                v-else
+                to="/login"
+                class="px-3 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-100"
+                active-class="font-medium text-gray-900 bg-gray-50 dark:text-gray-100 dark:bg-gray-800"
+                @click="$event.target.closest('#mobile-menu')?.querySelector('button')?.click?.()"
+              >
+                Sign in
+              </NuxtLink>
+            </ClientOnly>
           </MobileNav>
         </div>
       </div>
@@ -101,3 +123,23 @@
     </footer>
   </div>
 </template>
+
+<script setup>
+const { user: authUser, loaded, fetchUser } = useUser()
+
+const authHomePath = computed(() =>
+  authUser.value ? homeForRole(authUser.value.role) : '/login'
+)
+const authHomeLabel = computed(() => {
+  if (!authUser.value) return 'Sign in'
+  if (authUser.value.role === 'provider_admin') return 'Dashboard'
+  if (authUser.value.role === 'platform_admin') return 'Admin'
+  return 'My account'
+})
+
+onMounted(() => {
+  if (!loaded.value) {
+    fetchUser()
+  }
+})
+</script>

@@ -25,20 +25,48 @@
         it from your account dashboard.
       </p>
       <NuxtLink
-        to="/"
+        to="/account"
         class="mt-6 inline-flex rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
       >
-        Back to home
+        Track my inquiries
       </NuxtLink>
     </div>
     <div v-else class="grid gap-8 lg:grid-cols-3">
       <div class="lg:col-span-2">
-        <div class="rounded-2xl border bg-white p-6 md:p-8 dark:border-gray-800 dark:bg-gray-900">
+        <div
+          v-if="!authLoaded"
+          class="rounded-2xl border bg-white p-8 text-center text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400"
+        >
+          Loading...
+        </div>
+        <div
+          v-else-if="!user"
+          class="rounded-2xl border bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900"
+        >
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            Sign in to request a quote
+          </h2>
+          <p class="mt-2 text-gray-600 dark:text-gray-300">
+            A free account lets the clinic reply to you and lets you track your inquiry. Patients
+            can sign in with a one-time email link — no password needed.
+          </p>
+          <NuxtLink
+            :to="{ path: '/login', query: { redirect: route.fullPath } }"
+            class="mt-6 inline-flex rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900"
+          >
+            Sign in or create an account
+          </NuxtLink>
+        </div>
+        <div
+          v-else
+          class="rounded-2xl border bg-white p-6 md:p-8 dark:border-gray-800 dark:bg-gray-900"
+        >
           <QuoteForm
             :clinic-id="clinicId"
             :package-id="packageId"
             :clinic-name="displayClinicName"
             :package-name="displayPackageName"
+            :initial-email="user?.email || ''"
             @success="onSuccess"
           />
         </div>
@@ -76,6 +104,7 @@ useSeo({
 const route = useRoute()
 const { getPackage } = usePackages()
 const { getClinic } = useClinics()
+const { user, loaded: authLoaded, fetchUser } = useUser()
 
 const clinicSlug = computed(() => route.query.clinic || '')
 const packageId = computed(() => route.query.package || '')
@@ -88,6 +117,9 @@ const displayClinicName = ref('')
 const displayPackageName = ref('')
 
 onMounted(async () => {
+  if (!authLoaded.value) {
+    fetchUser()
+  }
   try {
     if (packageId.value) {
       const pkg = await getPackage(packageId.value)
