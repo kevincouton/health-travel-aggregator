@@ -11,7 +11,7 @@ use chassis::{
     clinics::{self, ClinicStatus},
     error::ApiError,
     packages::{self, Package},
-    treatments,
+    subscriptions, treatments,
     users::UserRole,
 };
 use serde::{Deserialize, Serialize};
@@ -70,6 +70,7 @@ pub async fn create(
 ) -> Result<Json<Package>, ApiError> {
     auth::require_role(&user, UserRole::ProviderAdmin)?;
     require_clinic_ownership(&state.pool, &user, clinic_id).await?;
+    subscriptions::enforce_package_limit(&state.pool, user.id).await?;
 
     let package = packages::create(
         &state.pool,

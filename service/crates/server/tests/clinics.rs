@@ -1,6 +1,6 @@
 use axum::body::Body;
 use chassis::{
-    auth, config::Config, connectors::email::MockEmailSender, db::DbPool, users, users::UserRole,
+    auth, config::Config, connectors::{email::MockEmailSender, payments::MockPaymentProvider}, db::DbPool, users, users::UserRole,
 };
 use server::{router::app, state::AppState};
 use std::sync::Arc;
@@ -20,11 +20,14 @@ fn test_config() -> Config {
 
 async fn setup_state(pool: DbPool) -> (AppState, Arc<MockEmailSender>) {
     chassis::db::migrate(&pool).await.unwrap();
+    chassis::subscriptions::seed_plans(&pool).await.unwrap();
     let email = Arc::new(MockEmailSender::new());
     let state = AppState {
         cfg: test_config(),
         pool,
         email: email.clone(),
+        payments: Arc::new(MockPaymentProvider::new()),
+        stripe: None,
     };
     (state, email)
 }

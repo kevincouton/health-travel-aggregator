@@ -69,3 +69,28 @@ pub async fn mark_verified(pool: &crate::db::DbPool, id: Uuid) -> Result<(), Api
         .map_err(|_| ApiError::Internal)?;
     Ok(())
 }
+
+pub async fn stripe_customer_id(
+    pool: &crate::db::DbPool,
+    id: Uuid,
+) -> Result<Option<String>, ApiError> {
+    sqlx::query_scalar("SELECT stripe_customer_id FROM users WHERE id = $1")
+        .bind(id)
+        .fetch_one(pool)
+        .await
+        .map_err(|_| ApiError::Internal)
+}
+
+pub async fn set_stripe_customer_id(
+    pool: &crate::db::DbPool,
+    id: Uuid,
+    customer_id: &str,
+) -> Result<(), ApiError> {
+    sqlx::query("UPDATE users SET stripe_customer_id = $2 WHERE id = $1")
+        .bind(id)
+        .bind(customer_id)
+        .execute(pool)
+        .await
+        .map_err(|_| ApiError::Internal)?;
+    Ok(())
+}
