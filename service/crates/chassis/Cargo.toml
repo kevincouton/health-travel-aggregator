@@ -2,13 +2,13 @@
 name = "chassis"
 version = "0.1.0"
 edition = "2021"
+publish = false
 
 [dependencies]
 anyhow = "1"
 async-trait = "0.1"
 axum = { workspace = true }
-base64 = { git = "https://github.com/rust-stdx/stdx", rev = "c83000f05a084527033e8b884fb21ea07de80ab8" }
-constant_time_eq = { git = "https://github.com/rust-stdx/stdx", rev = "c83000f05a084527033e8b884fb21ea07de80ab8" }
+constant_time_eq = "0.3"
 dotenvy = "0.15"
 hex = "0.4"
 hmac = "0.12"
