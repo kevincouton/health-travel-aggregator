@@ -1,0 +1,41 @@
+# cargo-deny configuration for the service workspace.
+# The repo has no LICENSE file; the allow-list below covers the permissive
+# licenses used by the current dependency tree.
+
+[advisories]
+# Known advisories in the pre-existing dependency tree, mirrored by the
+# warn-only `cargo audit` policy in CI. Everything listed here rides the old
+# reqwest 0.11 / rustls 0.21 / hyper 0.14 chain pulled in via openidconnect
+# 3.5 (oauth2 4.4); clearing them requires the reqwest 0.12 / openidconnect 4
+# upgrade. New advisories still fail the check.
+ignore = [
+  "RUSTSEC-2023-0071", # rsa Marvin timing sidechannel (no fix released)
+  "RUSTSEC-2025-0134", # rustls-pemfile unmaintained
+  "RUSTSEC-2026-0098", # webpki URI name constraints
+  "RUSTSEC-2026-0099", # webpki wildcard name constraints
+  "RUSTSEC-2026-0104", # rustls-webpki CRL parsing panic (CRLs unused here)
+  "RUSTSEC-2026-0258", # h2 unbounded empty DATA frames (no fix in 0.3/0.4 yet)
+]
+
+[bans]
+multiple-versions = "warn"
+wildcards = "warn"
+
+[licenses]
+# Private (unpublished) workspace crates carry no license metadata.
+private = { ignore = true }
+allow = [
+  "0BSD",
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "BSL-1.0",
+  "CC0-1.0",
+  "CDLA-Permissive-2.0", # webpki-roots
+  "ISC",
+  "MIT",
+  "MPL-2.0",
+  "Unicode-3.0",
+  "Zlib",
+]
