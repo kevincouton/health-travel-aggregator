@@ -6,8 +6,4 @@ regexTarget = "match"
 regexes = [
   # CI-only dummy session signing key, never used outside CI.
   '''ci-(test|e2e)-key-min-32-bytes[a-z-]*''',
-  # searchKey embedded in a scraped third-party HTML test fixture
-  # (collectors/tests/fixtures/mhtc_find_hospital.html); already public in
-  # the committed fixture, tracked for fixture sanitization.
-  '''***REMOVED***''',
 ]
