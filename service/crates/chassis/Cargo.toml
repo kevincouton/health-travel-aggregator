@@ -11,7 +11,7 @@ axum = { workspace = true }
 constant_time_eq = "0.3"
 dotenvy = "0.15"
 hex = "0.4"
-hmac = "0.12"
+hmac = "0.13"
 # rustls only (no native-tls), matching the workspace TLS standard (R-3).
 lettre = { version = "0.11", default-features = false, features = ["builder", "smtp-transport", "tokio1-rustls", "ring", "webpki-roots"] }
 openidconnect = "=4.0.1" # oauth2 5 re-exports reqwest 0.12; its Client implements AsyncHttpClient
