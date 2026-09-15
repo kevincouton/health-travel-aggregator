@@ -216,7 +216,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87  # stable
-      - uses: taiki-e/install-action@45472d76f4b8b7996b14d7dcd5f5f35784b9dd1d  # cargo-audit
+      - uses: taiki-e/install-action@212e92b595ceefa6daaad2cda95b921ed5da4cd4  # cargo-audit
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -267,7 +267,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
         with:
           persist-credentials: false
-      - uses: taiki-e/install-action@c02248eec042a8a90b2335f60bb37dc287b54068  # cargo-deny
+      - uses: taiki-e/install-action@212e92b595ceefa6daaad2cda95b921ed5da4cd4  # cargo-deny
       - name: cargo deny check (${{ matrix.manifest }})
         working-directory: ./${{ matrix.manifest }}
         run: cargo deny check
