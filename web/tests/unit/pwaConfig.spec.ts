@@ -64,9 +64,11 @@ describe('isNetworkOnlyPath', () => {
 describe('buildWorkboxConfig', () => {
   const config = buildWorkboxConfig(API_URL)
 
-  it('points generateSW at the prerendered output and falls back to the offline page', () => {
+  it('points generateSW at the prerendered output without an unconditional fallback', () => {
     expect(config.globDirectory).toBe('.output/public')
-    expect(config.navigateFallback).toBe('/offline.html')
+    // Regression guard: navigateFallback's NavigationRoute serves the fallback
+    // unconditionally and shadows the SWR runtime route below.
+    expect((config as Record<string, unknown>).navigateFallback).toBeUndefined()
   })
 
   it('excludes authenticated surfaces from the precache', () => {
@@ -77,14 +79,25 @@ describe('buildWorkboxConfig', () => {
   })
 
   it('denies the offline fallback for authenticated and API navigations', () => {
-    const denied = (path: string) =>
-      config.navigateFallbackDenylist.some((pattern) => pattern.test(path))
+    // With no navigateFallback, denial comes from the SWR route matcher:
+    // authenticated/API navigations match no runtime route and fail offline.
+    const route = config.runtimeCaching[0]
+    expect(route.handler).toBe('StaleWhileRevalidate')
+    // workbox-build serializes the matcher with Function.prototype.toString;
+    // rebuild it the same way to test exactly what lands in the service worker.
+    const matcher = new Function(`return (${route.urlPattern.toString()})`)() as (arg: {
+      request: { mode: string; url: string }
+    }) => boolean
+    // Request.mode 'navigate' cannot be constructed in jsdom; a structural
+    // stub matches what the service worker passes to the matcher.
+    const at = (path: string) =>
+      matcher({ request: { mode: 'navigate', url: `https://health-travel.lucanian.app${path}` } })
     for (const path of ['/auth/verify', '/me/inquiries', '/admin', '/dashboard', '/account']) {
-      expect(denied(path)).toBe(true)
+      expect(at(path)).toBe(false)
     }
-    expect(denied('/api/v1/clinics')).toBe(true)
-    expect(denied('/clinics')).toBe(false)
-    expect(denied('/treatments')).toBe(false)
+    expect(at('/api/v1/clinics')).toBe(false)
+    expect(at('/clinics')).toBe(true)
+    expect(at('/quote')).toBe(true)
   })
 
   it('caches visited public pages offline but never authenticated ones', () => {

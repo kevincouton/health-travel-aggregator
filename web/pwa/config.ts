@@ -3,7 +3,7 @@
 // The security-critical rule: authenticated and mutation surfaces are
 // network-only and must never be served from a cache. NETWORK_ONLY_SEGMENTS
 // is the single source of truth — it drives the precache ignore list and the
-// navigation-fallback denylist. The runtime navigation matcher below repeats
+// runtime navigation matcher. The runtime navigation matcher below repeats
 // the same list inline because workbox-build serializes route functions with
 // Function.prototype.toString, so they cannot close over module scope; the
 // unit tests assert both copies agree.
@@ -67,13 +67,14 @@ export function buildWorkboxConfig(apiUrl: string) {
       '404.html',
       ...NETWORK_ONLY_SEGMENTS.map((segment) => `${segment}/**`),
     ],
-    // Uncached public routes fall back to a static offline page; authenticated
-    // and API routes fall through to the network and simply fail offline.
-    navigateFallback: '/offline.html',
-    navigateFallbackDenylist: [
-      ...NETWORK_ONLY_SEGMENTS.map((segment) => new RegExp(`^/${segment}(/|$)`)),
-      /^\/api(\/|$)/,
-    ],
+    // No navigation fallback: workbox's NavigationRoute would serve the
+    // fallback unconditionally for every non-denylisted navigation, shadowing
+    // the runtime route below. Offline degradation happens via the SWR
+    // route's handlerDidError instead; authenticated and API navigations
+    // match no route and simply fail offline. The key must stay present with
+    // an undefined value — @vite-pwa/nuxt defaults navigateFallback to '/'
+    // when the key is absent, and workbox's template only checks truthiness.
+    navigateFallback: undefined,
     // Replicates @vite-pwa/nuxt's default html -> route URL mapping and, in
     // addition, precaches /offline.html under its plain URL (revision null) so
     // the runtime handlerDidError hook below can find it with caches.match.
