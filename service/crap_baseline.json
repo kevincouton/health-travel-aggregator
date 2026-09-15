@@ -955,6 +955,14 @@
       "crap": 306.0
     },
     {
+      "file": "crates/server/src/bin/seed.rs",
+      "function": "upsert_provider_subscription",
+      "line": 193,
+      "cyclomatic": 2.0,
+      "coverage": 0.0,
+      "crap": 6.0
+    },
+    {
       "file": "crates/server/src/extractors.rs",
       "function": "AdminUser::from_request_parts",
       "line": 70,

@@ -133,6 +133,10 @@ async fn main() -> anyhow::Result<()> {
     .context("failed to upsert demo clinic")?
     .0;
 
+    upsert_provider_subscription(&pool, provider_id)
+        .await
+        .expect("failed to upsert provider subscription");
+
     // Optionally seed a published package for the demo clinic.
     if let Some((treatment_id,)) =
         query_as::<_, (Uuid,)>("SELECT id FROM treatments WHERE slug = $1")
@@ -178,5 +182,30 @@ async fn main() -> anyhow::Result<()> {
         "database seeded successfully"
     );
 
+    Ok(())
+}
+
+/// Give the demo provider an active Pro subscription so plan-limit
+/// enforcement (Basic allows a single clinic) does not block e2e flows that
+/// create additional clinics. The subscriptions table has no unique
+/// constraint on user_id, so idempotency is guarded manually by the NOT
+/// EXISTS clause.
+async fn upsert_provider_subscription(
+    pool: &sqlx::PgPool,
+    provider_id: Uuid,
+) -> Result<(), sqlx::Error> {
+    query(
+        "INSERT INTO subscriptions (user_id, plan_id, status, current_period_end)
+         SELECT $1, id, 'active', NOW() + INTERVAL '1 year'
+         FROM subscription_plans
+         WHERE slug = 'pro'
+           AND NOT EXISTS (
+             SELECT 1 FROM subscriptions
+             WHERE user_id = $1 AND status IN ('trialing', 'active', 'past_due')
+           )",
+    )
+    .bind(provider_id)
+    .execute(pool)
+    .await?;
     Ok(())
 }
