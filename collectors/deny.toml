@@ -1,6 +1,6 @@
 # cargo-deny configuration for the collectors crate.
-# The repo has no LICENSE file; the allow-list below covers the permissive
-# licenses used by the current dependency tree.
+# The allow-list below covers the permissive licenses used by the current
+# dependency tree.
 
 [advisories]
 # Known advisories in the pre-existing dependency tree, mirrored by the

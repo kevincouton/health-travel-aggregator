@@ -1,25 +1,22 @@
 # cargo-deny configuration for the service workspace.
-# The repo has no LICENSE file; the allow-list below covers the permissive
-# licenses used by the current dependency tree.
+# Synced from platform-templates via sync-manifest.txt; the allow-list below
+# covers the permissive licenses used by the current dependency tree.
 
 [advisories]
-# Known advisories in the pre-existing dependency tree, mirrored by the
-# warn-only `cargo audit` policy in CI. Everything listed here rides the old
-# reqwest 0.11 / rustls 0.21 / hyper 0.14 chain pulled in via openidconnect
-# 3.5 (oauth2 4.4); clearing them requires the reqwest 0.12 / openidconnect 4
-# upgrade. New advisories still fail the check.
+yanked = "deny"
+# Accepted risk, still present after the openidconnect 4.0.1 / reqwest 0.12
+# upgrade (rustls 0.23 / hyper 1.x / h2 0.4 — the rustls 0.21, webpki 0.101,
+# h2 0.3, and rustls-pemfile ignores were cleared by that upgrade).
 ignore = [
-  "RUSTSEC-2023-0071", # rsa Marvin timing sidechannel (no fix released)
-  "RUSTSEC-2025-0134", # rustls-pemfile unmaintained
-  "RUSTSEC-2026-0098", # webpki URI name constraints
-  "RUSTSEC-2026-0099", # webpki wildcard name constraints
-  "RUSTSEC-2026-0104", # rustls-webpki CRL parsing panic (CRLs unused here)
-  "RUSTSEC-2026-0258", # h2 unbounded empty DATA frames (no fix in 0.3/0.4 yet)
+  # rsa 0.9.x (via openidconnect 4.0.1, latest 4.x): Marvin timing
+  # sidechannel; no upstream fix. Verified via `cargo tree -i rsa`.
+  "RUSTSEC-2023-0071",
 ]
 
 [bans]
 multiple-versions = "warn"
 wildcards = "warn"
+highlight = "all"
 
 [licenses]
 # Private (unpublished) workspace crates carry no license metadata.
@@ -32,10 +29,15 @@ allow = [
   "BSD-3-Clause",
   "BSL-1.0",
   "CC0-1.0",
-  "CDLA-Permissive-2.0", # webpki-roots
+  "CDLA-Permissive-2.0", # webpki-roots 1.x (Mozilla roots bundle)
   "ISC",
   "MIT",
   "MPL-2.0",
   "Unicode-3.0",
   "Zlib",
 ]
+
+[sources]
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+unknown-registry = "deny"
+unknown-git = "deny"
