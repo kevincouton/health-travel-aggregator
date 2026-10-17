@@ -1,3 +1,5 @@
+import tailwindcss from '@tailwindcss/vite'
+
 import { buildManifest, buildWorkboxConfig, THEME_COLOR } from './pwa/config'
 
 const apiUrl = process.env.NUXT_PUBLIC_API_URL || 'http://localhost:8080'
@@ -18,7 +20,7 @@ export default defineNuxtConfig({
     },
   },
   devtools: { enabled: false },
-  modules: ['@nuxtjs/tailwindcss', '@vite-pwa/nuxt'],
+  modules: ['@vite-pwa/nuxt'],
   pwa: {
     registerType: 'autoUpdate',
     manifest: buildManifest(),
