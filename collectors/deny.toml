@@ -5,9 +5,7 @@
 [advisories]
 # Known advisories in the pre-existing dependency tree, mirrored by the
 # warn-only `cargo audit` policy in CI. New advisories still fail the check.
-ignore = [
-  "RUSTSEC-2025-0057", # fxhash unmaintained, pulled in via scraper; no drop-in fix yet
-]
+ignore = []
 
 [bans]
 multiple-versions = "warn"
