@@ -7,6 +7,8 @@ Type=simple
 ExecStart=/usr/local/bin/health-travel-aggregator-server
 WorkingDirectory=/root/health-travel-aggregator
 Environment=DATABASE_PATH=/var/lib/health-travel-aggregator/health-travel-aggregator.db
+# Optional env file on the host (SENTRY_DSN, SENTRY_RELEASE, ...).
+EnvironmentFile=-/etc/health-travel-aggregator/env
 Restart=on-failure
 RestartSec=3
 

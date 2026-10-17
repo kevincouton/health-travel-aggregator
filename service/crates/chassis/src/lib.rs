@@ -9,6 +9,7 @@ pub mod db;
 pub mod error;
 pub mod inquiries;
 pub mod locations;
+pub mod observability;
 pub mod packages;
 pub mod reviews;
 pub mod subscriptions;

@@ -5,6 +5,7 @@ pub struct Config {
     pub api_port: u16,
     pub session_signing_key: String,
     pub cors_origin: String,
+    pub sentry_dsn: String,
     pub rate_limit_auth_per_minute: u32,
     pub rate_limit_write_per_minute: u32,
 }
@@ -20,6 +21,7 @@ impl Config {
                 .unwrap_or(8080),
             session_signing_key: std::env::var("SESSION_SIGNING_KEY").expect("SESSION_SIGNING_KEY"),
             cors_origin: std::env::var("CORS_ORIGIN").unwrap_or_default(),
+            sentry_dsn: std::env::var("SENTRY_DSN").unwrap_or_default(),
             rate_limit_auth_per_minute: env_u32("RATE_LIMIT_AUTH_PER_MINUTE", 10),
             rate_limit_write_per_minute: env_u32("RATE_LIMIT_WRITE_PER_MINUTE", 30),
         }

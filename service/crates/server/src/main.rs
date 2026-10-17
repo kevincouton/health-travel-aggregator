@@ -1,20 +1,6 @@
 use chassis::{config::Config, db};
 use server::{router::app, state::AppState};
 
-/// Error tracking (GlitchTip, Sentry-compatible). Disabled cleanly when
-/// SENTRY_DSN is unset so dev/CI is unaffected; panic capture is on via the
-/// "panic" feature. The guard must outlive main so queued events flush.
-fn init_sentry() -> Option<sentry::ClientInitGuard> {
-    let dsn = std::env::var("SENTRY_DSN").unwrap_or_default();
-    if dsn.is_empty() {
-        return None;
-    }
-    // ClientOptions is #[non_exhaustive]: mutate defaults, no FRU.
-    let mut opts = sentry::ClientOptions::default();
-    opts.release = sentry::release_name!();
-    Some(sentry::init((dsn, opts)))
-}
-
 /// One-shot end-to-end verification hook: SENTRY_SELF_TEST=1 fires a single
 /// error-level message shortly after startup. Never set in production.
 fn start_sentry_self_test() {
@@ -28,18 +14,34 @@ fn start_sentry_self_test() {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let _sentry_guard = init_sentry();
-    // fmt layer (INFO default) plus the sentry layer, which captures
-    // error-level events as Sentry errors and lower levels as breadcrumbs.
-    // No-op when the client is disabled.
-    use tracing_subscriber::prelude::*;
-    tracing_subscriber::registry()
-        .with(tracing_subscriber::filter::LevelFilter::INFO)
-        .with(tracing_subscriber::fmt::layer())
-        .with(sentry_tracing::layer())
-        .init();
-
     let cfg = Config::from_env();
+    // Error tracking (GlitchTip, Sentry-compatible). Disabled cleanly when
+    // SENTRY_DSN is empty so dev/CI is unaffected; the guard must outlive
+    // main so queued events flush.
+    let _sentry = chassis::observability::init(
+        &cfg.sentry_dsn,
+        Some(
+            concat!(
+                "health-travel-aggregator-server@",
+                env!("CARGO_PKG_VERSION")
+            )
+            .to_string(),
+        ),
+    );
+    // fmt layer (INFO default). With Sentry enabled, the sentry layer also
+    // captures error-level events as Sentry errors and lower levels as
+    // breadcrumbs; without it, keep the plain fmt subscriber.
+    use tracing_subscriber::prelude::*;
+    if _sentry.is_some() {
+        tracing_subscriber::registry()
+            .with(tracing_subscriber::filter::LevelFilter::INFO)
+            .with(tracing_subscriber::fmt::layer())
+            .with(sentry::integrations::tracing::layer())
+            .init();
+    } else {
+        tracing_subscriber::fmt().init();
+    }
+
     let pool = db::connect(&cfg.database_url).await?;
     db::migrate(&pool).await?;
     // Idempotent; guarantees the Basic/Pro/Enterprise catalog exists for

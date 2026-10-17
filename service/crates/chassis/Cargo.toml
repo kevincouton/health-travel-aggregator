@@ -32,6 +32,11 @@ serde_urlencoded = "0.7"
 sha2 = "0.10"
 time = { version = "0.3", features = ["macros", "parsing", "formatting"] }
 tracing = "0.1"
+# Sentry error capture (errors + tracing, panic capture); inert unless
+# SENTRY_DSN is set. `sentry-tracing` crate not needed — the "tracing"
+# feature exposes integrations::tracing::layer() (see R-3 TLS note: the
+# reqwest transport pulls reqwest 0.13 alongside the tree's 0.12).
+sentry = { workspace = true }
 
 [dev-dependencies]
 httptest = "0.16"
