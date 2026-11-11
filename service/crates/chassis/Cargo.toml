@@ -1,3 +1,14 @@
+[lints.clippy]
+# Google Rust Style Guide aligned lints (see ../../RUST_STYLE.md); each verified
+# via `cargo clippy --workspace --all-targets -- -D warnings -W clippy::<lint>`.
+wildcard_imports = "warn"
+implicit_clone = "warn"
+redundant_field_names = "warn"
+ptr_arg = "warn"
+# Guide-aligned but not yet clean (21 hits across the workspace); enable after
+# a dedicated style pass.
+uninlined_format_args = "allow"
+
 [package]
 name = "chassis"
 version = "0.1.0"

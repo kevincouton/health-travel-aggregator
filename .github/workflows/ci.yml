@@ -43,13 +43,29 @@ jobs:
       - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87  # stable
         with:
           components: clippy, rustfmt
-      - run: cargo fmt --check
-      - run: cargo clippy -- -D warnings
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets -- -D warnings
       - run: cargo build --release
       - name: Install sqlx-cli
         run: cargo install sqlx-cli --version 0.8.6 --no-default-features --features rustls,postgres --locked
       - name: Apply database migrations
         run: sqlx migrate run
+      - run: cargo test
+
+  collectors:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./collectors
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@6bed0761d98439e5a578e2877258200ad565ba87  # stable
+        with:
+          components: clippy, rustfmt
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --all-targets -- -D warnings
       - run: cargo test
 
   web:
@@ -277,7 +293,7 @@ jobs:
         run: cargo deny check
 
   deploy:
-    needs: [service, web, crap-check, e2e]
+    needs: [service, web, crap-check, e2e, collectors]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' && github.event_name == 'push' && vars.DEPLOY_ENABLED == 'true'
     steps:

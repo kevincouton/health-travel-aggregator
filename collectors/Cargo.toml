@@ -4,6 +4,15 @@ version = "0.1.0"
 edition = "2021"
 publish = false
 
+[lints.clippy]
+# Google Rust Style Guide aligned lints (see ../RUST_STYLE.md); each verified
+# clean via `cargo clippy --all-targets -- -D warnings -W clippy::<lint>`.
+wildcard_imports = "warn"
+uninlined_format_args = "warn"
+implicit_clone = "warn"
+redundant_field_names = "warn"
+ptr_arg = "warn"
+
 [dependencies]
 async-trait = "0.1"
 anyhow = "1"
