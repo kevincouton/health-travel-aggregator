@@ -5,7 +5,12 @@
 [advisories]
 # Known advisories in the pre-existing dependency tree, mirrored by the
 # warn-only `cargo audit` policy in CI. New advisories still fail the check.
-ignore = []
+ignore = [
+  # chrono 0.4.45: informational "unmaintained" advisory (2026-09-14), no
+  # patched version exists; the recommended replacements (jiff/time) are a
+  # fleet-wide migration round, tracked separately. No known vulnerability.
+  "RUSTSEC-2026-0543",
+]
 
 [bans]
 multiple-versions = "warn"
